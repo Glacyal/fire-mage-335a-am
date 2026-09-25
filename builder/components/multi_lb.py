@@ -3,7 +3,7 @@ Modulo Componente: 19 - Multi-Target Living Bomb Tracker
 =========================================================
 Gestisce la colonna verticale dinamica sul lato destro dell'HUD per monitorare fino a 5 Living Bomb attive:
 - Dynamic Group con crescita verso il basso (grow = 'DOWN', space = 3px, icone compatte 24x24px).
-- Posizione: xOffset = 165, yOffset = 45 (a destra della barra centrale e dei proc).
+- Posizione: xOffset = 169, yOffset = 45 (a destra della barra centrale e dei proc).
 - Completamente autoportante e disaccoppiato:
   * Frame dedicato FMHUD_LBFrame con event listener & ticker OnUpdate (0.15s).
   * Tracciamento istantaneo del lancio su target tramite UNIT_SPELLCAST_SUCCEEDED.
@@ -322,7 +322,7 @@ def build_multi_lb_auras() -> list[dict]:
             "regionType": "dynamicgroup",
             "internalVersion": 52,
             "scale": 1.0,
-            "xOffset": 165,
+            "xOffset": 169,
             "yOffset": 45,
             "grow": "DOWN",
             "space": 3,

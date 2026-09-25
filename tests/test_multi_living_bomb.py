@@ -3,7 +3,7 @@ Test di Validazione per il Componente: 19 - Multi-Target Living Bomb Tracker
 ===========================================================================
 Verifica:
 1. Integrità del Dynamic Group e delle 5 icone tracker (24x24 px).
-2. Configurazione di posizionamento: xOffset = 165, grow = 'DOWN', space = 3.
+2. Configurazione di posizionamento: xOffset = 169, grow = 'DOWN', space = 3.
 3. Presenza del trigger custom con ordinamento FIFO inverso (_G.FMHUD_GetActiveLivingBombs).
 4. Correttezza del customText (timer allerta rossa <= 3s, secondi interi > 3s).
 5. Integrazione completa nell'albero gerarchico Class Mage (TTW Fire).
@@ -32,7 +32,7 @@ class TestMultiLivingBomb(unittest.TestCase):
         self.assertEqual(grp["regionType"], "dynamicgroup")
         self.assertEqual(grp["grow"], "DOWN")
         self.assertEqual(grp["space"], 3)
-        self.assertEqual(grp["xOffset"], 165)
+        self.assertEqual(grp["xOffset"], 169)
         self.assertEqual(grp["yOffset"], 45)
         self.assertEqual(len(grp["controlledChildren"]), 5)
 

@@ -159,7 +159,7 @@ Il modulo `builder/components/stats.py` impedisce la duplicazione di buff raid d
 - **Numerazione Continua dei Componenti**: Tutti i componenti primari del gruppo root seguono la sequenza continua `01`–`19`, garantendo perfetta corrispondenza tra i moduli generati da `builder/`, la stringa importabile e il simulatore web.
 
 ### 4.7 Multi-Target Living Bomb Tracker (`19 - Multi-Target Living Bomb`)
-- **Posizione & Layout**: Dynamic Group verticale posizionato a destra dell'HUD (`xOffset = 165, yOffset = 45`, `grow = "DOWN"`, `space = 3`, icone 24x24 px).
+- **Posizione & Layout**: Dynamic Group verticale posizionato a destra dell'HUD (`xOffset = 169, yOffset = 45`, `grow = "DOWN"`, `space = 3`, icone 24x24 px).
 - **Architettura Autonoma e Disaccoppiata (`SHARED_MULTILB_LUA`)**:
   - Il componente non dipende in alcun modo da `utility.py` né dall'esecuzione del Trinket 1: si auto-inizializza all'attivazione del trigger di `Living Bomb Tracker 1` creando il frame dedicato `_G.FMHUD_LBFrame`.
   - **Doppio Canale di Tracciamento**:

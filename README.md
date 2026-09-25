@@ -74,7 +74,7 @@ Aggiorna in tempo reale i valori effettivi tenendo conto di equipaggiamento, tal
 - **Hit %**: Precisione con talenti, aura Draenei e debuff boss, con indicatore verde **`(Cap)`** al raggiungimento del 17%.
 
 ### 7. Multi-Target Living Bomb Tracker (`19 - Multi-Target Living Bomb`)
-Colonna verticale dinamica posizionata sul lato destro dell'HUD (`xOffset = 165, yOffset = 45`) per monitorare fino a 5 Living Bomb attive contemporaneamente su bersagli diversi:
+Colonna verticale dinamica posizionata sul lato destro dell'HUD (`xOffset = 169, yOffset = 45`) per monitorare fino a 5 Living Bomb attive contemporaneamente su bersagli diversi:
 - **Ordinamento Intelligente per Scadenza**: La Living Bomb più vicina all'esplosione (minor tempo residuo) occupa sempre la prima posizione in alto (#1), seguita in ordine cronologico da #2, #3, #4, #5.
 - **Timer con Allerta Rossa**:
   - Quando mancano $\le 3$ secondi all'esplosione, il conto alla rovescia si colora di rosso acceso con 1 decimale (`|cFFFF4444%.1fs|r`) per allertare il giocatore di preparare la ri-applicazione.
