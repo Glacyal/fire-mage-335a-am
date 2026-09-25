@@ -1620,7 +1620,7 @@
                             </div>
                             <!-- 12 - Mirror Image -->
                             <div class="wa-box" id="utilMirror" onclick="useMirrorImage()" title="12 - Mirror Image">
-                                <img src="https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg" alt="Mirror Image">
+                                <img id="imgMirror" src="https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg" alt="Mirror Image">
                                 <div class="cd-swipe" id="swipeMirror"></div>
                                 <div class="tag-timer" id="tagMirrorTimer"></div>
                             </div>
@@ -2499,16 +2499,32 @@
 
             const swGloves = document.getElementById('swipeGloves');
             const swBoots = document.getElementById('swipeBoots');
+            const swMirror = document.getElementById('swipeMirror');
             const tagGloves = document.getElementById('tagGlovesTimer');
             const tagBoots = document.getElementById('tagBootsTimer');
+            const tagMirror = document.getElementById('tagMirrorTimer');
             const boxGloves = document.getElementById('utilGloves');
             const boxBoots = document.getElementById('utilBoots');
+            const boxMirror = document.getElementById('utilMirror');
+            const imgMirror = document.getElementById('imgMirror');
+
+            clearSimTimer('mirror');
+            sim.mirrorBuffActive = false;
+            sim.mirrorCdRemaining = 0;
+
             if (swGloves) swGloves.classList.remove('active');
             if (swBoots) swBoots.classList.remove('active');
+            if (swMirror) swMirror.classList.remove('active');
             if (tagGloves) tagGloves.textContent = '';
             if (tagBoots) tagBoots.textContent = '';
+            if (tagMirror) {
+                tagMirror.textContent = '';
+                tagMirror.style.color = '#ffffff';
+            }
             if (boxGloves) boxGloves.classList.remove('pixel-glow');
             if (boxBoots) boxBoots.classList.remove('pixel-glow');
+            if (boxMirror) boxMirror.classList.remove('pixel-glow');
+            if (imgMirror) imgMirror.src = 'https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg';
 
             const bMolten = document.getElementById('btnMoltenToggle');
             if (bMolten) {
@@ -2966,21 +2982,122 @@
 
         // Use Mirror Image
         function useMirrorImage() {
-            clearSimTimer('mirror');
             const swipe = document.getElementById('swipeMirror');
             const tag = document.getElementById('tagMirrorTimer');
-            swipe.classList.add('active');
-            tag.textContent = '3:00';
-            if (sim.tierConfig === 'T10') {
-                spawnFCT('👥 Mirror Image (+18% Damage T10 Quad Core)!', true);
-            } else {
-                spawnFCT('👥 Mirror Image (3 Images Summoned)', false);
-            }
-            sim.timers['mirror'] = setTimeout(() => {
-                swipe.classList.remove('active');
-                tag.textContent = '';
+            const img = document.getElementById('imgMirror');
+            const box = document.getElementById('utilMirror');
+
+            // Se è attivo il buff di potenziamento (T10 Quad Core) e l'utente riclicca l'icona,
+            // simula la rimozione anticipata del buff (/cancelaura Quad Core):
+            // passa immediatamente al Cooldown del lancio con icona base e tempo rimanente del CD!
+            if (sim.mirrorBuffActive) {
                 clearSimTimer('mirror');
-            }, 10000);
+                sim.mirrorBuffActive = false;
+                if (box) box.classList.remove('pixel-glow');
+                if (img) img.src = 'https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg';
+                spawnFCT('Quad Core Buff Removed Early! -> Cooldown', false);
+
+                // Continua il cooldown dal tempo trascorso (3m CD totale, elapsed = 30 - remBuff)
+                let remCD = Math.max(1, Math.floor(sim.mirrorCdRemaining || 170));
+                const m = Math.floor(remCD / 60);
+                const s = remCD % 60;
+                if (tag) {
+                    tag.textContent = m > 0 ? `${m}:${s < 10 ? '0' : ''}${s}` : `${s}s`;
+                    tag.style.color = '#ffffff';
+                }
+                if (swipe) swipe.classList.add('active');
+
+                sim.timers['mirror'] = setInterval(() => {
+                    remCD--;
+                    sim.mirrorCdRemaining = remCD;
+                    if (remCD <= 0) {
+                        clearSimTimer('mirror');
+                        if (swipe) swipe.classList.remove('active');
+                        if (tag) tag.textContent = '';
+                    } else {
+                        const min = Math.floor(remCD / 60);
+                        const sec = remCD % 60;
+                        if (tag) tag.textContent = min > 0 ? `${min}:${sec < 10 ? '0' : ''}${sec}` : `${sec}s`;
+                    }
+                }, 1000);
+                return;
+            }
+
+            // Altrimenti se era già in cooldown (senza buff), un click non fa nulla
+            if (sim.mirrorCdRemaining && sim.mirrorCdRemaining > 0) {
+                return;
+            }
+
+            clearSimTimer('mirror');
+            if (swipe) swipe.classList.add('active');
+
+            let totalCD = 180; // 3 minuti
+            sim.mirrorCdRemaining = totalCD;
+
+            if (sim.tierConfig === 'T10') {
+                sim.mirrorBuffActive = true;
+                let remBuff = 30; // 30 secondi Quad Core
+                if (box) box.classList.add('pixel-glow');
+                if (img) img.src = 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_invisibilty.jpg';
+                if (tag) {
+                    tag.textContent = remBuff + 's';
+                    tag.style.color = '#ffff00';
+                }
+                spawnFCT('👥 Mirror Image (+18% Damage T10 Quad Core)! Click again to cancel buff', true);
+
+                sim.timers['mirror'] = setInterval(() => {
+                    totalCD--;
+                    sim.mirrorCdRemaining = totalCD;
+                    if (sim.mirrorBuffActive) {
+                        remBuff--;
+                        if (remBuff <= 0) {
+                            // Scaduto naturalmente il buff di 30s
+                            sim.mirrorBuffActive = false;
+                            if (box) box.classList.remove('pixel-glow');
+                            if (img) img.src = 'https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg';
+                            if (tag) tag.style.color = '#ffffff';
+                        } else {
+                            if (tag) {
+                                tag.textContent = remBuff + 's';
+                                tag.style.color = remBuff <= 3 ? '#ff2222' : '#ffff00';
+                            }
+                        }
+                    } else {
+                        // Fase solo Cooldown fino a 0
+                        if (totalCD <= 0) {
+                            clearSimTimer('mirror');
+                            if (swipe) swipe.classList.remove('active');
+                            if (tag) tag.textContent = '';
+                        } else {
+                            const min = Math.floor(totalCD / 60);
+                            const sec = totalCD % 60;
+                            if (tag) tag.textContent = min > 0 ? `${min}:${sec < 10 ? '0' : ''}${sec}` : `${sec}s`;
+                        }
+                    }
+                }, 1000);
+            } else {
+                sim.mirrorBuffActive = false;
+                if (img) img.src = 'https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg';
+                if (tag) {
+                    tag.textContent = '3:00';
+                    tag.style.color = '#ffffff';
+                }
+                spawnFCT('👥 Mirror Image (3 Images Summoned - 3m CD)', false);
+
+                sim.timers['mirror'] = setInterval(() => {
+                    totalCD--;
+                    sim.mirrorCdRemaining = totalCD;
+                    if (totalCD <= 0) {
+                        clearSimTimer('mirror');
+                        if (swipe) swipe.classList.remove('active');
+                        if (tag) tag.textContent = '';
+                    } else {
+                        const min = Math.floor(totalCD / 60);
+                        const sec = totalCD % 60;
+                        if (tag) tag.textContent = min > 0 ? `${min}:${sec < 10 ? '0' : ''}${sec}` : `${sec}s`;
+                    }
+                }, 1000);
+            }
         }
 
         // 13 - Boots (Engineering Nitro Boosts / Slot 8: Sprint for 5s, 3m CD)

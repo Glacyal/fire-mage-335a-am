@@ -774,7 +774,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
 
         if start and duration and start > 0 and duration > 1.5 then
             local elapsed = now - start
-            if elapsed >= 0 and elapsed < 30 then
+            if not hasT10_4P and elapsed >= 0 and elapsed < 30 then
                 local remActive = 30 - elapsed
                 return "ACTIVE", remActive, 30, baseIcon, false
             else
