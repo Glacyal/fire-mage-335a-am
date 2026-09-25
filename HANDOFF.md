@@ -180,4 +180,4 @@ Il modulo `builder/components/stats.py` impedisce la duplicazione di buff raid d
 ## 5. Note di Compatibilità Addon & API
 
 - **Client 3.3.5a**: Compatibilità nativa 100%. Gli script Lua impiegano `COMBAT_LOG_EVENT_UNFILTERED` con passaggio parametri tramite `...`, `UnitBuff` con return a 11 argomenti e `GetNumPartyMembers()`.
-- **Client Moderni / Retail**: WeakAuras 5 su client moderni non è compatibile per via delle modifiche alle API Blizzard (`CombatLogGetCurrentEventInfo`, `C_UnitAuras`, rimozione di `GetNumPartyMembers`) e della diversa rotazione del Mago Fuoco.
+
