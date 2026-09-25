@@ -1,9 +1,9 @@
 # Class Mage (TTW Fire) — WeakAuras Suite
 
-[![WoW Version](https://img.shields.io/badge/World%20of%20Warcraft-3.3.5a%20(12340)-orange.svg)](https://github.com/Glacyal/fire-mage-3.3.5a-am)
-[![WeakAuras](https://img.shields.io/badge/WeakAuras-4.0.0-blue.svg)](https://github.com/Glacyal/fire-mage-3.3.5a-am)
-[![Class](https://img.shields.io/badge/Class-Mage%20(Fire%20TTW)-red.svg)](https://github.com/Glacyal/fire-mage-3.3.5a-am)
-[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://glacyal.github.io/fire-mage-3.3.5a-am/)
+[![WoW Version](https://img.shields.io/badge/World%20of%20Warcraft-3.3.5a%20(12340)-orange.svg)](https://github.com/Glacyal/fire-mage-335a-am)
+[![WeakAuras](https://img.shields.io/badge/WeakAuras-4.0.0-blue.svg)](https://github.com/Glacyal/fire-mage-335a-am)
+[![Class](https://img.shields.io/badge/Class-Mage%20(Fire%20TTW)-red.svg)](https://github.com/Glacyal/fire-mage-335a-am)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://glacyal.github.io/fire-mage-335a-am/)
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-gray.svg?logo=paypal&logoColor=white&labelColor=0079c1)](https://www.paypal.me/AMantmar)
 
 Suite WeakAuras completa, modulare e ordinata per **Mago Fire Livello 80** in World of Warcraft 3.3.5a (*Wrath of the Lich King - Build 12340*).  
@@ -14,7 +14,7 @@ Progettata per garantire un'elevata fluidità in combattimento, un consumo ridot
 ## 🌐 Anteprima Online (Live Simulator)
 
 Visualizza e interagisci con l'HUD direttamente dal browser senza installare nulla:  
-👉 **[Apri il Simulatore Web su GitHub Pages](https://glacyal.github.io/fire-mage-3.3.5a-am/)**  
+👉 **[Apri il Simulatore Web su GitHub Pages](https://glacyal.github.io/fire-mage-335a-am/)**  
 *(Disponibile anche in locale nel file [`docs/index.html`](file:///d:/0Progetti/Fire%20Mage%203.3.5a%20AM/docs/index.html))*
 
 ---
@@ -167,4 +167,4 @@ python generate.py
 ## 📄 Licenza
 
 Distribuito sotto licenza **MIT**.  
-Repository: [Glacyal/fire-mage-3.3.5a-am](https://github.com/Glacyal/fire-mage-3.3.5a-am)
+Repository: [Glacyal/fire-mage-335a-am](https://github.com/Glacyal/fire-mage-335a-am)

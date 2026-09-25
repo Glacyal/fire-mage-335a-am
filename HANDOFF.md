@@ -12,17 +12,17 @@ La suite è distribuita come **WeakAura autonoma** in formato compresso `!WA:1!`
 | :--- | :--- |
 | **Piattaforma Target** | World of Warcraft 3.3.5a (WotLK Build 12340) |
 | **Engine WeakAuras** | WeakAuras 4.0.0 (`internalVersion = 52`, header `!WA:1!`). Tutti i test sono stati eseguiti su questa versione. |
-| **File di Distribuzione** | [`IMPORT_STRING.txt`](file:///d:/0Progetti/fire-mage-3.3.5a-am/IMPORT_STRING.txt) |
-| **Simulatore Web** | [`docs/index.html`](file:///d:/0Progetti/fire-mage-3.3.5a-am/docs/index.html) |
-| **Live Demo Online** | [GitHub Pages Live Showcase](https://glacyal.github.io/fire-mage-3.3.5a-am/) |
-| **Controllo Versione** | Git su GitHub: [Glacyal/fire-mage-3.3.5a-am](https://github.com/Glacyal/fire-mage-3.3.5a-am) (branch: `main`) |
+| **File di Distribuzione** | [`IMPORT_STRING.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING.txt) |
+| **Simulatore Web** | [`docs/index.html`](file:///d:/0Progetti/fire-mage-335a-am/docs/index.html) |
+| **Live Demo Online** | [GitHub Pages Live Showcase](https://glacyal.github.io/fire-mage-335a-am/) |
+| **Controllo Versione** | Git su GitHub: [Glacyal/fire-mage-335a-am](https://github.com/Glacyal/fire-mage-335a-am) (branch: `main`) |
 
 ---
 
 ## 2. Struttura del Repository
 
 ```text
-fire-mage-3.3.5a-am/
+fire-mage-335a-am/
 ├── IMPORT_STRING.txt                # Stringa WeakAuras pronta all'uso per il comando /wa
 ├── generate.py                      # Compilatore Python dell'albero WA
 ├── README.md                        # Documentazione utente, guida installazione e compatibilità
