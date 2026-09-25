@@ -463,7 +463,7 @@
             width: 88px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 0px;
         }
 
         /* 3 Long Buffs (Molten, Intellect, Focus Magic) */
@@ -1410,15 +1410,15 @@
                     <div class="left-col">
                         <!-- 3 Long Buffs (28x28px each, total width = 88px) -->
                         <div class="three-buffs-row">
-                            <!-- 02 - Molten Armor -->
-                            <div class="wa-box desaturated" id="boxMolten" onclick="toggleMolten()" title="02 - Molten Armor (Click to toggle)">
-                                <img src="https://wow.zamimg.com/images/wow/icons/large/ability_mage_moltenarmor.jpg" alt="Molten Armor">
-                                <div class="tag-off" id="tagMoltenOff">OFF</div>
-                            </div>
                             <!-- 03 - Arcane Intellect -->
                             <div class="wa-box desaturated" id="boxIntellect" onclick="toggleIntellect()" title="03 - Arcane Intellect (Click to toggle)">
                                 <img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg" alt="Intellect">
                                 <div class="tag-off" id="tagIntOff">OFF</div>
+                            </div>
+                            <!-- 02 - Molten Armor -->
+                            <div class="wa-box desaturated" id="boxMolten" onclick="toggleMolten()" title="02 - Molten Armor (Click to toggle)">
+                                <img src="https://wow.zamimg.com/images/wow/icons/large/ability_mage_moltenarmor.jpg" alt="Molten Armor">
+                                <div class="tag-off" id="tagMoltenOff">OFF</div>
                             </div>
                             <!-- 04 - Focus Magic -->
                             <div class="wa-box desaturated" id="boxFocusMagic" onclick="cycleFmState()" title="04 - Focus Magic (Click to cycle state)">
