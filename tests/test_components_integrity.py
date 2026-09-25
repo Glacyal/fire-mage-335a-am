@@ -52,10 +52,10 @@ class TestComponentsIntegrity(unittest.TestCase):
                 self.assertIn("regionType", a, f"Elemento in {name} privo di 'regionType'")
 
     def test_total_aura_count_and_uniqueness(self):
-        """Verifica il conteggio totale delle aure (43) e l'unicità di ID e UID."""
+        """Verifica il conteggio totale delle aure (44) e l'unicità di ID e UID."""
         tree = build_wa_tree()
         children = tree["c"]
-        self.assertEqual(len(children), 43, f"Previste 43 aure, trovate {len(children)}")
+        self.assertEqual(len(children), 44, f"Previste 44 aure, trovate {len(children)}")
 
         seen_ids = set()
         seen_uids = set()
@@ -82,6 +82,17 @@ class TestComponentsIntegrity(unittest.TestCase):
             if "controlledChildren" in a:
                 for child_id in a["controlledChildren"]:
                     self.assertIn(child_id, all_ids, f"Gruppo {a['id']} referenzia figlio inesistente: {child_id}")
+
+    def test_procs_children_order(self):
+        """Verifica che 01 - Procs contenga Pyroblast immediatamente a destra di Living Bomb."""
+        tree = build_wa_tree()
+        procs_dg = next(a for a in tree["c"] if a["id"] == "01 - Procs")
+        children = procs_dg["controlledChildren"]
+        self.assertIn("Living Bomb", children)
+        self.assertIn("Pyroblast", children)
+        lb_idx = children.index("Living Bomb")
+        pyro_idx = children.index("Pyroblast")
+        self.assertEqual(pyro_idx, lb_idx + 1, "Pyroblast deve essere posizionato immediatamente a destra di Living Bomb")
 
     def test_castbar_spell_icon_enabled(self):
         """Verifica che 16 - Castbar abbia l'icona della spell attiva abilitata a sinistra."""

@@ -34,14 +34,15 @@ Posizionata visivamente a schermo subito sopra la barra del mana, è suddivisa i
   - Si spegne quando il buff viene consumato dal lancio della Pyroblast istantanea o alla scadenza naturale. Se il buff scade, l'eventuale singolo critico registrato a sinistra rimane salvato.
 
 ### 2. Gruppo Dinamico Procs (`01 - Procs`)
-Posizionato nella parte superiore dell'HUD, gestisce fino a 7 icone con riposizionamento orizzontale automatico:
+Posizionato nella parte superiore dell'HUD, gestisce fino a 8 icone con riposizionamento orizzontale automatico:
 1. **Tier 10 2P (*Pushing the Limit*)**: +12% Haste per 5s con animazione dorata su proc di Hot Streak.
 2. **Hot Streak**: Icona del proc con timer e swipe circolare.
 3. **Clearcasting**: Lancio gratuito del prossimo incantesimo con timer.
 4. **Living Bomb**: Monitoraggio del debuff sul bersaglio con conto alla rovescia per il rinnovo ottimale.
-5. **Ignite**: Durata residua del danno periodico da critico sul bersaglio.
-6. **Improved Scorch**: Tracciamento del debuff +5% critico magico sul bersaglio.
-7. **Molten Fury**: Attivo durante la fase di Execute (bersaglio con salute inferiore al 35%).
+5. **Pyroblast**: Tracciamento del debuff DoT periodico di 12 secondi applicato al bersaglio dal lancio di Pyroblast.
+6. **Ignite**: Durata residua del danno periodico da critico sul bersaglio.
+7. **Improved Scorch**: Tracciamento del debuff +5% critico magico sul bersaglio.
+8. **Molten Fury**: Attivo durante la fase di Execute (bersaglio con salute inferiore al 35%).
 
 ### 3. Schermo Pulito ("Zero Clutter")
 - **02 - Molten Armor & 03 - Arcane Intellect**: Rimangono nascosti durante il combattimento se hanno più di 5 minuti residui; mostrano il timer solo in scadenza e un avviso visivo in rosso se assenti.
@@ -142,6 +143,8 @@ Fire Mage 3.3.5a AM/
 | Client / Piattaforma | Versione WeakAuras | Compatibilità | Note |
 | :--- | :--- | :---: | :--- |
 | **WotLK 3.3.5a (Build 12340)** | **WeakAuras 4.0.0** | ✅ **100% Nativa** | Sviluppata e collaudata su WeakAuras 4.0.0 (`internalVersion: 52`). Importazione rapida e priva di blocchi (~48 KB). |
+| **WotLK Classic / Cata Classic** | WeakAuras 5.x (Blizzard) | ⚠️ **Parziale** | Struttura compatibile, ma richiede l'adattamento delle chiamate Lua del Combat Log (`CombatLogGetCurrentEventInfo`). |
+| **Retail** | WeakAuras 5.x | ❌ **Non Compatibile** | Meccaniche e abilità della classe sostanzialmente differenti. |
 
 ---
 

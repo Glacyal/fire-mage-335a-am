@@ -8,18 +8,19 @@ Gestisce la barra orizzontale dinamica superiore dei proc di combattimento (y = 
   2. Hot Streak (Icona attiva di proc con Pixel Glow)
   3. Clearcasting (Arcane Concentration)
   4. Living Bomb (Debuff sul target attuale con countdown)
-  5. Ignite (Debuff sul target attuale con countdown)
-  6. Scorch (Debuff sul target attuale con countdown)
-  7. Molten Fury (Target <= 35% HP con Pixel Glow)
+  5. Pyroblast (Debuff DoT 12s sul target attuale con countdown)
+  6. Ignite (Debuff sul target attuale con countdown)
+  7. Scorch (Debuff sul target attuale con countdown)
+  8. Molten Fury (Target <= 35% HP con Pixel Glow)
 """
 from builder.core.helpers import make_subtext
 
 
 def build_procs_auras() -> list[dict]:
     """
-    Costruisce e restituisce le 8 aure del gruppo dinamico Procs:
+    Costruisce e restituisce le 9 aure del gruppo dinamico Procs:
     - 01 - Procs (Dynamic Group)
-    - Tier 10, Hot Streak, Clearcasting, Living Bomb, Ignite, Scorch, Molten Fury.
+    - Tier 10, Hot Streak, Clearcasting, Living Bomb, Pyroblast, Ignite, Scorch, Molten Fury.
     """
     return [
         {
@@ -38,6 +39,7 @@ def build_procs_auras() -> list[dict]:
                 "Hot Streak",
                 "Clearcasting",
                 "Living Bomb",
+                "Pyroblast",
                 "Ignite",
                 "Scorch",
                 "Molten Fury"
@@ -297,6 +299,68 @@ end""",
                             "55359",
                             "44457",
                             "Bomba Vivente"
+                        ],
+                        "useName": True,
+                        "debuffType": "HARMFUL",
+                        "matchesShowOn": "showOnActive",
+                        "ownOnly": True,
+                    },
+                    "untrigger": {}
+                },
+                "activeTriggerMode": -10,
+            },
+            "subRegions": [
+                {"type": "subbackground"},
+                make_subtext("%c", justify="CENTER", anchor_point="INNER_BOTTOM", font_size=11),
+            ],
+        },
+        # Pyroblast (Target Debuff DoT - 12s)
+        {
+            "id": "Pyroblast",
+            "uid": "FMHUD_PYROBLAST",
+            "parent": "01 - Procs",
+            "regionType": "icon",
+            "internalVersion": 52,
+            "width": 34,
+            "height": 34,
+            "displayIcon": "Interface\\Icons\\Spell_Fire_Fireball02",
+            "auto": True,
+            "color": [1, 1, 1, 1],
+            "cooldown": True,
+            "cooldownSwipe": True,
+            "cooldownEdge": True,
+            "cooldownTextDisabled": True,
+            "inverse": False,
+            "customTextUpdate": "update",
+            "customText": """function()
+    if not UnitExists("target") then return "" end
+    for i = 1, 40 do
+        local name, _, _, _, _, _, expirationTime, unitCaster, _, _, spellId = UnitDebuff("target", i)
+        if not name then break end
+        if (unitCaster == "player" or not unitCaster) and (spellId == 42891 or spellId == 33938 or spellId == 27132 or name == "Pyroblast" or name == "Piroclasma" or string.find(name, "Pyroblast") or string.find(name, "Piroclasma")) then
+            local rem = expirationTime and expirationTime > 0 and (expirationTime - GetTime()) or 0
+            if rem > 0 then
+                if rem <= 3 then
+                    return string.format("|cFFFF4444%.1fs|r", rem)
+                else
+                    return string.format("%.0fs", rem)
+                end
+            end
+        end
+    end
+    return ""
+end""",
+            "triggers": {
+                1: {
+                    "trigger": {
+                        "type": "aura2",
+                        "unit": "target",
+                        "auranames": [
+                            "Pyroblast",
+                            "42891",
+                            "33938",
+                            "27132",
+                            "Piroclasma"
                         ],
                         "useName": True,
                         "debuffType": "HARMFUL",

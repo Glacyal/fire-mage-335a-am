@@ -30,7 +30,7 @@ fire-mage-335a-am/
 ├── GEMINI.md                        # Regole di progetto, comandi CP e MODELLO
 │
 ├── builder/                         # Pacchetto Python modulare per la generazione dell'HUD
-│   ├── tree.py                      # Assemblatore dell'albero gerarchico (43 aure WeakAuras, 19 nodi principali)
+│   ├── tree.py                      # Assemblatore dell'albero gerarchico (44 aure WeakAuras, 19 nodi principali)
 │   ├── core/                        # Moduli core di serializzazione e codifica
 │   │   ├── constants.py             # Load conditions (Mage 68), texture, font Expressway
 │   │   ├── serializer.py            # Serializzatore AceSerializer-3.0 puro (^1...^^)
@@ -53,7 +53,7 @@ fire-mage-335a-am/
 └── tests/                           # Suite di test automatici e paralleli
     ├── run_parallel_tests.py        # Test runner parallelo multi-processore (ProcessPoolExecutor)
     ├── test_all_utility_cases.py    # Verifica esaustiva 64 combinazioni riga utility
-    ├── test_components_integrity.py # Verifica integrità strutturale moduli (43 aure, sequenza 01-19)
+    ├── test_components_integrity.py # Verifica integrità strutturale moduli (44 aure, sequenza 01-19)
     ├── test_equip_switch.py         # Test transizioni e centratura universale da 3 a 9 icone
     ├── test_hotstreak_decoupled.py  # Test logica Hot Streak persistente e decoppiata
     ├── test_html_simultaneous.py    # Stress test concorrenza simulatore web
@@ -180,4 +180,4 @@ Il modulo `builder/components/stats.py` impedisce la duplicazione di buff raid d
 ## 5. Note di Compatibilità Addon & API
 
 - **Client 3.3.5a**: Compatibilità nativa 100%. Gli script Lua impiegano `COMBAT_LOG_EVENT_UNFILTERED` con passaggio parametri tramite `...`, `UnitBuff` con return a 11 argomenti e `GetNumPartyMembers()`.
-
+- **Client Moderni / Retail**: WeakAuras 5 su client moderni non è compatibile per via delle modifiche alle API Blizzard (`CombatLogGetCurrentEventInfo`, `C_UnitAuras`, rimozione di `GetNumPartyMembers`) e della diversa rotazione del Mago Fuoco.

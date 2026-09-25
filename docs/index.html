@@ -1372,25 +1372,31 @@
                         <img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_manaburn.jpg" alt="Clearcasting">
                         <div class="tag-timer" id="ccTimer"></div>
                     </div>
-                    <!-- 4. Ignite (4s rolling critical strike debuff) -->
-                    <div class="wa-box size-34 pixel-glow" id="procIgnite" onclick="applyIgnite()" title="Ignite: 4s rolling critical strike debuff">
-                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_incinerate.jpg" alt="Ignite">
-                        <div class="cd-swipe" id="swipeIgnite"></div>
-                        <div class="tag-timer" id="igniteTimer">4.0s</div>
-                    </div>
-                    <!-- 5. Scorch / Improved Scorch (+5% Crit) -->
-                    <div class="wa-box size-34" id="procScorch" onclick="applyScorch()" title="Improved Scorch (+5% Spell Crit Debuff)">
-                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_soulburn.jpg" alt="Scorch">
-                        <div class="cd-swipe" id="swipeScorch"></div>
-                        <div class="tag-timer" id="scorchTimer"></div>
-                    </div>
-                    <!-- 6. Living Bomb -->
+                    <!-- 4. Living Bomb -->
                     <div class="wa-box size-34" id="procLivingBomb" onclick="applyLivingBomb()" title="Living Bomb">
                         <img src="https://wow.zamimg.com/images/wow/icons/large/ability_mage_livingbomb.jpg" alt="Living Bomb">
                         <div class="cd-swipe" id="swipeLb"></div>
                         <div class="tag-timer" id="lbTimer"></div>
                     </div>
-                    <!-- 7. Molten Fury (Target <= 35% HP in Screenshot 1) -->
+                    <!-- 5. Pyroblast (12s Target DoT) -->
+                    <div class="wa-box size-34" id="procPyroblast" onclick="applyPyroDebuff()" title="Pyroblast (12s Target DoT)">
+                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_fireball02.jpg" alt="Pyroblast">
+                        <div class="cd-swipe" id="swipePyro"></div>
+                        <div class="tag-timer" id="pyroTimer"></div>
+                    </div>
+                    <!-- 6. Ignite (4s rolling critical strike debuff) -->
+                    <div class="wa-box size-34 pixel-glow" id="procIgnite" onclick="applyIgnite()" title="Ignite: 4s rolling critical strike debuff">
+                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_incinerate.jpg" alt="Ignite">
+                        <div class="cd-swipe" id="swipeIgnite"></div>
+                        <div class="tag-timer" id="igniteTimer">4.0s</div>
+                    </div>
+                    <!-- 7. Scorch / Improved Scorch (+5% Crit) -->
+                    <div class="wa-box size-34" id="procScorch" onclick="applyScorch()" title="Improved Scorch (+5% Spell Crit Debuff)">
+                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_soulburn.jpg" alt="Scorch">
+                        <div class="cd-swipe" id="swipeScorch"></div>
+                        <div class="tag-timer" id="scorchTimer"></div>
+                    </div>
+                    <!-- 8. Molten Fury (Target <= 35% HP in Screenshot 1) -->
                     <div class="wa-box size-34 pixel-glow" id="procMoltenFury" onclick="toggleMoltenFury()" title="Molten Fury: Target &lt;= 35% HP">
                         <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_moltenblood.jpg" alt="Molten Fury">
                         <div class="tag-center">35%</div>
@@ -1801,6 +1807,7 @@
             glovesActive: false,
             bootsActive: false,
             lbActive: true,
+            pyroActive: true,
             igniteActive: true,
             scorchActive: true,
             clearcastingActive: true,
@@ -2062,27 +2069,29 @@
             updateProcsVisibility();
         }
 
-        // Update Dynamic Procs Visibility (Dynamic Group: Tier 10, Hot Streak, CC, Ignite, Scorch, LB, Molten Fury)
+        // Update Dynamic Procs Visibility (Dynamic Group: Tier 10, Hot Streak, CC, LB, Pyroblast, Ignite, Scorch, Molten Fury)
         function updateProcsVisibility() {
             const t10 = document.getElementById('procT10');
             const hs = document.getElementById('procHotStreak');
             const cc = document.getElementById('procClearcasting');
+            const lb = document.getElementById('procLivingBomb');
+            const pyro = document.getElementById('procPyroblast');
             const ignite = document.getElementById('procIgnite');
             const scorch = document.getElementById('procScorch');
-            const lb = document.getElementById('procLivingBomb');
             const fury = document.getElementById('procMoltenFury');
 
             const showT10 = sim.t10Active && sim.t10Equipped;
             t10.className = 'wa-box size-34' + (showT10 ? ' pixel-glow' : ' proc-hidden');
             hs.className = 'wa-box size-34' + (sim.hsProc ? ' pixel-glow' : ' proc-hidden');
             cc.className = 'wa-box size-34' + (sim.clearcastingActive ? ' pixel-glow' : ' proc-hidden');
+            lb.className = 'wa-box size-34' + (sim.lbActive ? ' pixel-glow' : ' proc-hidden');
+            pyro.className = 'wa-box size-34' + (sim.pyroActive ? ' pixel-glow' : ' proc-hidden');
             ignite.className = 'wa-box size-34' + (sim.igniteActive ? ' pixel-glow' : ' proc-hidden');
             scorch.className = 'wa-box size-34' + (sim.scorchActive ? ' pixel-glow' : ' proc-hidden');
-            lb.className = 'wa-box size-34' + (sim.lbActive ? ' pixel-glow' : ' proc-hidden');
             fury.className = 'wa-box size-34' + (sim.targetExecute ? ' pixel-glow' : ' proc-hidden');
 
             const procsBar = document.getElementById('procsBar');
-            const anyActive = showT10 || sim.hsProc || sim.clearcastingActive || sim.igniteActive || sim.scorchActive || sim.targetExecute || sim.mode === 'SCREENSHOT' || sim.lbActive;
+            const anyActive = showT10 || sim.hsProc || sim.clearcastingActive || sim.igniteActive || sim.scorchActive || sim.targetExecute || sim.mode === 'SCREENSHOT' || sim.lbActive || sim.pyroActive;
             
             if (anyActive && sim.mode !== 'IDLE') {
                 procsBar.classList.remove('hidden');
@@ -2260,6 +2269,9 @@
                 if (ignTimer) ignTimer.textContent = '4.0s';
 
                 setTierConfig('T8_T10');
+                sim.pyroActive = true;
+                const pyroTimer = document.getElementById('pyroTimer');
+                if (pyroTimer) pyroTimer.textContent = '12s';
                 renderHotStreakUI();
                 updateProcsVisibility();
                 renderStats();
@@ -2274,6 +2286,8 @@
                 sim.targetExecute = false;
                 sim.igniteActive = false;
                 sim.scorchActive = false;
+                sim.lbActive = false;
+                sim.pyroActive = false;
                 sim.combustion = 0;
                 sim.isCasting = false;
                 sim.manaGems = 0;
@@ -2896,6 +2910,39 @@
             }, 1000);
         }
 
+        // Apply Pyroblast (Target Debuff DoT - 12s)
+        function applyPyroDebuff() {
+            clearSimTimer('pyro');
+            sim.pyroActive = true;
+            updateProcsVisibility();
+            spawnFCT('🔥 Pyroblast DoT Applied!', false);
+            
+            const swipe = document.getElementById('swipePyro');
+            const tag = document.getElementById('pyroTimer');
+            if (swipe) swipe.classList.add('active');
+            let rem = 12.0;
+            if (tag) tag.textContent = '12s';
+            
+            sim.timers['pyro'] = setInterval(() => {
+                rem -= 1.0;
+                if (rem <= 0 || !sim.pyroActive) {
+                    clearSimTimer('pyro');
+                    sim.pyroActive = false;
+                    if (swipe) swipe.classList.remove('active');
+                    if (tag) tag.textContent = '';
+                    updateProcsVisibility();
+                } else {
+                    if (tag) {
+                        if (rem <= 3) {
+                            tag.innerHTML = `<span style="color:#ff4444">${rem.toFixed(1)}s</span>`;
+                        } else {
+                            tag.textContent = rem.toFixed(0) + 's';
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
         // Force Hot Streak Ready (Quick Action Button)
         function forceHotStreakReady() {
             triggerHotStreakProc();
@@ -3003,6 +3050,9 @@
             cancelHotStreakProc();
             setManaPct(sim.manaPct - 1.5);
             renderHotStreakUI();
+
+            // Applies Pyroblast 12s DoT on target
+            applyPyroDebuff();
 
             // Proc 2P Tier 10 (Pushing the Limit): triggers on Hot Streak consumption!
             if (sim.t10Equipped && !sim.t10Active) {
