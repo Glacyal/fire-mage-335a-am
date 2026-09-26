@@ -140,7 +140,7 @@ Per apportare modifiche alla suite o estendere la logica:
   - **Tier 8 2P (Praxis)**: Visibile solo con $\ge 2$ pezzi del set T8 Kirin Tor equipaggiati (+350 SP, 45s ICD).
   - **Guanti (Slot 10)**: Visibili solo se equipaggiati con l'incanto Ingegneria *Acceleratori Ipersonici* (+340 Haste per 12s, 60s CD con filtro lockout condiviso < 45s).
   - **Gemma del Mana**: Sempre visibile, con cariche effettive in borsa (`3`, `2`, `1` o `0` in rosso, senza prefisso `x`), icona nativa dinamica (Zaffiro/Smeraldo), cooldown di 2m e proc T7 Mana Surge.
-  - **Combustion**: Sempre visibile con icona nativa dell'incantesimo (`select(3, GetSpellInfo(11129))`), stato ON, stack critici e cooldown 2m.
+  - **Combustion**: Sempre visibile con icona nativa dell'incantesimo, stato ON, stack critici e cooldown 2m.
   - **Mirror Image**: Sempre visibile con icona nativa dell'incantesimo (`select(3, GetSpellInfo(55342))`), durata copie 30s, cooldown 3m e bonus 4P T10 *Quad Core* (+18% danno).
   - **Stivali (Slot 8)**: Visibili solo se equipaggiati con un incanto che conferisce velocità di movimento (*Acceleratori a Nitro* per Ingegneria con indicatore dei Nitro attivi a 5s con Pixel Glow, countdown di cooldown a 180s e swipe con filtro lockout condiviso < 60s, oppure *Vitalità Tuskarr*, *Rapidità Felina*, *Velocità Superiore*, ecc.). Se non incantati con velocità o se lo slot è vuoto, non compaiono.
   - **Disaccoppiamento Lockout Ingegneria**: In WotLK 3.3.5a l'attivazione di un tinker (es. Guanti) innesca un breve blocco condiviso (10-30s) sugli altri tinker (es. Stivali). Il motore di calcolo ignora questi blocchi temporanei su Guanti e Stivali, impedendo che l'attivazione dei guanti mostri falsi cooldown o swipe sui Nitro (e viceversa).
@@ -159,21 +159,13 @@ Il modulo `builder/components/stats.py` impedisce la duplicazione di buff raid d
 - **Numerazione Continua dei Componenti**: Tutti i componenti primari del gruppo root seguono la sequenza continua `01`–`19`, garantendo perfetta corrispondenza tra i moduli generati da `builder/`, la stringa importabile e il simulatore web.
 
 ### 4.7 Multi-Target Living Bomb Tracker (`19 - Multi-Target Living Bomb`)
-- **Posizione & Layout**: Dynamic Group verticale posizionato a destra dell'HUD (`xOffset = 169, yOffset = 45`, `grow = "DOWN"`, `space = 3`, icone 24x24 px).
+- **Posizione & Layout**: Dynamic Group verticale posizionato a destra dell'HUD per monitorare fino a 5 Living Bomb attive contemporaneamente.
 - **Architettura Autonoma e Disaccoppiata (`SHARED_MULTILB_LUA`)**:
-  - Il componente non dipende in alcun modo da `utility.py` né dall'esecuzione del Trinket 1: si auto-inizializza all'attivazione del trigger di `Living Bomb Tracker 1` creando il frame dedicato `_G.FMHUD_LBFrame`.
-  - **Doppio Canale di Tracciamento**:
-    1. `UNIT_SPELLCAST_SUCCEEDED`: inserimento istantaneo a zero latenza appena il giocatore completa il cast di Living Bomb sul bersaglio attuale.
-    2. `COMBAT_LOG_EVENT_UNFILTERED`: gestisce il multi-target esteso (`SPELL_AURA_APPLIED`, `SPELL_AURA_REFRESH`), la rimozione (`SPELL_AURA_REMOVED`, `SPELL_AURA_DISPEL`) e la morte dei mob (`UNIT_DIED`, `UNIT_DESTROYED`).
-    3. `UNIT_AURA` & `PLAYER_TARGET_CHANGED`: scansione autoritativa dei debuff reali del server via `UnitDebuff(unit, i)` per sincronizzare l'esatto `expirationTime` al millisecondo.
-  - **Ticker `OnUpdate` (0.15s)**: purga naturale delle bombe scadute a fine dei 12 secondi ed emissione dell'evento `WeakAuras.ScanEvents("FMHUD_LB_UPDATE")`.
-- **Ordinamento Intelligente per Scadenza (FIFO Inverso)**:
-  - Le bombe attive sono ordinate in modo che l'icona #1 mostri sempre la bomba con **minor tempo residuo all'esplosione**, seguita da #2, #3, #4 e #5.
-- **Formattazione Timer**:
-  - Tempo residuo $\le 3\text{s}$: testo rosso con 1 decimale (`|cFFFF4444%.1fs|r`) per allertare il giocatore del tick di esplosione imminente.
-  - Tempo residuo $> 3\text{s}$: testo bianco con secondi interi (`%.0fs`).
-- **Meccanica WotLK & Tetto Teorico**:
-  - Su WotLK 3.3.5a ufficiale (Retail) Blizzard **non vi era alcun cap di 3 bersagli** (rimosso nella patch 3.1.2/3.1.3 di Ulduar). Il limite teorico di bombe contemporanee per un singolo mago è tra **8** (a GCD base 1.5s) e **12** (a GCD cap di 1.0s sotto Bloodlust/Heroism). Il tracker a 5 icone copre in modo eccellente e compatto oltre il 90% delle situazioni reali di raid.
+  - Il componente si auto-inizializza all'attivazione del trigger di `Living Bomb Tracker 1` creando il frame dedicato `_G.FMHUD_LBFrame`.
+  - **Tracciamento Multi-Canale**: combina `UNIT_SPELLCAST_SUCCEEDED` (lancio immediato a zero latenza), combat log esteso (`SPELL_AURA_APPLIED/REFRESH/REMOVED`, `UNIT_DIED`) e scansione autoritativa via `UnitDebuff`.
+  - **Ticker `OnUpdate` (0.15s)**: purga naturale delle bombe al termine dei 12 secondi con notifica `FMHUD_LB_UPDATE`.
+- **Ordinamento Intelligente per Scadenza**: Le bombe attive sono disposte con la bomba più vicina all'esplosione in prima posizione (#1), seguita in ordine cronologico dalle successive.
+- **Formattazione Timer**: Testo rosso con 1 decimale per $\le 3\text{s}$ residui (allerta esplosione imminente) e testo bianco con secondi interi per durate superiori.
 
 ---
 

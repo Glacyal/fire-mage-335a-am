@@ -15,7 +15,6 @@ Progettata per garantire un'elevata fluidità in combattimento, un consumo ridot
 
 Visualizza e interagisci con l'HUD direttamente dal browser senza installare nulla:  
 👉 **[Apri il Simulatore Web su GitHub Pages](https://glacyal.github.io/fire-mage-335a-am/)**  
-*(Disponibile anche in locale nel file [`docs/index.html`](file:///d:/0Progetti/Fire%20Mage%203.3.5a%20AM/docs/index.html))*
 
 ---
 
@@ -74,11 +73,11 @@ Aggiorna in tempo reale i valori effettivi tenendo conto di equipaggiamento, tal
 - **Hit %**: Precisione con talenti, aura Draenei e debuff boss, con indicatore verde **`(Cap)`** al raggiungimento del 17%.
 
 ### 7. Multi-Target Living Bomb Tracker (`19 - Multi-Target Living Bomb`)
-Colonna verticale dinamica posizionata sul lato destro dell'HUD (`xOffset = 169, yOffset = 45`) per monitorare fino a 5 Living Bomb attive contemporaneamente su bersagli diversi:
+Colonna verticale dinamica posizionata sul lato destro dell'HUD per monitorare fino a 5 Living Bomb attive contemporaneamente su bersagli diversi:
 - **Ordinamento Intelligente per Scadenza**: La Living Bomb più vicina all'esplosione (minor tempo residuo) occupa sempre la prima posizione in alto (#1), seguita in ordine cronologico da #2, #3, #4, #5.
 - **Timer con Allerta Rossa**:
-  - Quando mancano $\le 3$ secondi all'esplosione, il conto alla rovescia si colora di rosso acceso con 1 decimale (`|cFFFF4444%.1fs|r`) per allertare il giocatore di preparare la ri-applicazione.
-  - Per tempi $> 3$ secondi, mostra i secondi interi bianchi (`%.0fs`).
+  - Quando mancano $\le 3$ secondi all'esplosione, il conto alla rovescia si colora di rosso acceso con 1 decimale per allertare il giocatore di preparare la ri-applicazione.
+  - Per tempi $> 3$ secondi, mostra i secondi interi bianchi.
 - **Motore Real-Time Disaccoppiato**: Frame dedicato `FMHUD_LBFrame` con rilevamento istantaneo del cast (`UNIT_SPELLCAST_SUCCEEDED`), ascolto del combat log multi-bersaglio (`SPELL_AURA_APPLIED/REFRESH/REMOVED`, `UNIT_DIED`) e sincronizzazione con il server via `UnitDebuff`.
 - **Ritiro Naturale delle Icone**: Quando una bomba esplode o il bersaglio muore, l'icona svanisce e la colonna si contrae automaticamente verso l'alto.
 
@@ -143,8 +142,6 @@ Fire Mage 3.3.5a AM/
 | Client / Piattaforma | Versione WeakAuras | Compatibilità | Note |
 | :--- | :--- | :---: | :--- |
 | **WotLK 3.3.5a (Build 12340)** | **WeakAuras 4.0.0** | ✅ **100% Nativa** | Sviluppata e collaudata su WeakAuras 4.0.0 (`internalVersion: 52`). Importazione rapida e priva di blocchi (~48 KB). |
-| **WotLK Classic / Cata Classic** | WeakAuras 5.x (Blizzard) | ⚠️ **Parziale** | Struttura compatibile, ma richiede l'adattamento delle chiamate Lua del Combat Log (`CombatLogGetCurrentEventInfo`). |
-| **Retail** | WeakAuras 5.x | ❌ **Non Compatibile** | Meccaniche e abilità della classe sostanzialmente differenti. |
 
 ---
 
