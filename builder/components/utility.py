@@ -734,22 +734,76 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         return "READY", 0, 0, 0, defIcon
     end
 
+    _G.FMHUD_CheckT10Equipped = function()
+        local now = GetTime()
+        local cache = _G.FMHUD_T10_EquipCache
+        if cache and (now - cache.time < 0.25) then
+            return cache.isEquipped
+        end
+        if not cache then
+            cache = { time = 0, isEquipped = false }
+            _G.FMHUD_T10_EquipCache = cache
+        end
+        cache.time = now
+
+        local count = 0
+        local slots = _G.FMHUD_ArmorSlots or { 1, 3, 5, 7, 10 }
+        local t10Pieces = _G.FMHUD_T10_4P_Pieces
+        for _, s in ipairs(slots) do
+            local id = GetInventoryItemID("player", s)
+            if id and t10Pieces and t10Pieces[id] then
+                count = count + 1
+            end
+        end
+        if count >= 4 then
+            cache.isEquipped = true
+            return true
+        end
+
+        local ttCount = 0
+        local tt = _G.FMHUD_ScanTT
+        if not tt then
+            tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
+            tt:SetOwner(UIParent, "ANCHOR_NONE")
+            _G.FMHUD_ScanTT = tt
+        end
+        for _, s in ipairs(slots) do
+            local id = GetInventoryItemID("player", s)
+            if id then
+                tt:ClearLines()
+                tt:SetInventoryItem("player", s)
+                for j = 1, tt:NumLines() do
+                    local line = _G["FMHUD_ScanTTTextLeft"..j]
+                    local text = line and line:GetText()
+                    if text then
+                        local lt = text:lower()
+                        if lt:find("bloodmage") or lt:find("magosangue") or lt:find("mago del sangue") or lt:find("quad core") or lt:find("t10") then
+                            ttCount = ttCount + 1
+                            break
+                        end
+                    end
+                end
+            end
+        end
+        if ttCount >= 4 then
+            cache.isEquipped = true
+            return true
+        end
+
+        cache.isEquipped = false
+        return false
+    end
+
     _G.FMHUD_CheckMirrorImage = function()
+        if not _G.FMHUD_CoreInitDone and _G.FMHUD_InitCore then _G.FMHUD_InitCore() end
         local now = GetTime()
         local baseIcon = select(3, GetSpellInfo(55342)) or select(3, GetSpellInfo("Mirror Image")) or select(3, GetSpellInfo("Immagine Speculare")) or "Interface/Icons/Spell_Magic_LesserInvisibilty"
         local quadCoreIcon = select(3, GetSpellInfo(70747)) or select(3, GetSpellInfo("Quad Core")) or "Interface/Icons/Spell_Nature_Invisibilty"
 
-        local hasT10_4P = false
-        local t10Pieces = _G.FMHUD_T10_4P_Pieces
-        local slots = _G.FMHUD_ArmorSlots or { 1, 3, 5, 7, 10 }
-        local t10Count = 0
-        for _, slot in ipairs(slots) do
-            local id = GetInventoryItemID("player", slot)
-            if id and t10Pieces and t10Pieces[id] then
-                t10Count = t10Count + 1
-            end
-        end
-        if t10Count >= 4 then hasT10_4P = true end
+        _G.FMHUD_MI_State = _G.FMHUD_MI_State or { wasT10Active = false, lastSpellStart = 0 }
+        local miState = _G.FMHUD_MI_State
+
+        local hasT10_4P = _G.FMHUD_CheckT10Equipped and _G.FMHUD_CheckT10Equipped()
 
         for i = 1, 40 do
             local name, _, buffIcon, count, _, duration, expirationTime, _, _, _, spellId = UnitBuff("player", i)
@@ -759,12 +813,8 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                 local rem = (expirationTime and expirationTime > 0) and (expirationTime - now) or 0
                 local dur = (duration and duration > 0) and duration or 30
                 local icon = buffIcon or quadCoreIcon
+                miState.wasT10Active = true
                 return "ACTIVE", rem, dur, icon, true
-            elseif name == "Mirror Image" or name == "Immagine Speculare" or spellId == 55342 then
-                local rem = (expirationTime and expirationTime > 0) and (expirationTime - now) or 0
-                local dur = (duration and duration > 0) and duration or 30
-                local icon = hasT10_4P and (buffIcon or quadCoreIcon) or baseIcon
-                return "ACTIVE", rem, dur, icon, hasT10_4P
             end
         end
 
@@ -773,16 +823,27 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not start or duration == 0 then start, duration = GetSpellCooldown("Immagine Speculare") end
 
         if start and duration and start > 0 and duration > 1.5 then
+            if miState.lastSpellStart ~= start then
+                miState.lastSpellStart = start
+            end
             local elapsed = now - start
-            if not hasT10_4P and elapsed >= 0 and elapsed < 30 then
-                local remActive = 30 - elapsed
-                return "ACTIVE", remActive, 30, baseIcon, false
-            else
-                local remCD = (start + duration) - now
+            local remCD = (start + duration) - now
+
+            if hasT10_4P or miState.wasT10Active then
                 if remCD > 0.1 then
                     return "COOLDOWN", remCD, duration, baseIcon, false
                 end
+            else
+                if elapsed >= 0 and elapsed < 30 then
+                    local remActive = 30 - elapsed
+                    return "ACTIVE", remActive, 30, baseIcon, false
+                elseif remCD > 0.1 then
+                    return "COOLDOWN", remCD, duration, baseIcon, false
+                end
             end
+        else
+            miState.wasT10Active = false
+            miState.lastSpellStart = 0
         end
 
         return "READY", 0, 0, baseIcon, false
