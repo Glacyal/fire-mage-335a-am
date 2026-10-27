@@ -136,7 +136,7 @@ Per apportare modifiche alla suite o estendere la logica:
   `[05 - Trinket 1] -> [06 - Trinket 2] -> [06b - Ring] -> [07 - Cloak] -> [08 - Tier 8] -> [09 - Gloves] -> [10 - Mana Gem] -> [11 - Combustion] -> [12 - Mirror Image] -> [13 - Boots]`
 - **Condizioni di visibilità e attivazione**:
   - **Trinket 1 & 2 (Slot 13 e 14)**: Visibili solo se gli slot sono equipaggiati con un monile valido (nascosti se vuoti).
-  - **Anello con Proc (Slot 11 o 12 - Opzione B: `06b - Ring`)**: Visibile solo se equipaggiato con un anello con proc da incantatore/healer (Ashen Band Exalted/Revered: 50398, 50397, 50400, 50392, o legacy Hyjal 29305, 29309). Traccia *Frostforged Sage* (+285 SP, 10s durata, 45s ICD), swipe, conto alla rovescia e Pixel Glow.
+  - **Anello con Proc (Slot 11 o 12 - Opzione B: `06b - Ring`)**: Visibile solo se equipaggiato con un anello con proc da incantatore/healer (Ashen Band Exalted/Revered: 50398, 50397, 50400, 50392, o legacy Hyjal 29305, 29309). Traccia *Frostforged Sage* (+285 SP, 10s durata, 60s ICD), swipe, conto alla rovescia e Pixel Glow.
   - **Mantello (Slot 15)**: Visibile solo se possiede un incanto con proc di potenziamento (*Lightweave*, *Darkglow*, *Swordguard*, *Flexweave*, ecc.).
   - **Tier 8 2P (Praxis)**: Visibile solo con $\ge 2$ pezzi del set T8 Kirin Tor equipaggiati (+350 SP, 45s ICD).
   - **Guanti (Slot 10)**: Visibili solo se equipaggiati con l'incanto Ingegneria *Acceleratori Ipersonici* (+340 Haste per 12s, 60s CD con filtro lockout condiviso < 45s).

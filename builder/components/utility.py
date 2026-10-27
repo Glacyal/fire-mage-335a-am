@@ -66,17 +66,17 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
 
     _G.FMHUD_RingDB = {
         -- Ashen Band of Endless Destruction (Exalted Caster DPS - 277)
-        [50398] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        [50398] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 60, dur = 10 },
         -- Ashen Band of Unmatched Destruction (Revered Caster DPS - 268)
-        [50397] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        [50397] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 60, dur = 10 },
         -- Ashen Band of Endless Wisdom (Exalted Caster/Healer - 277)
-        [50400] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        [50400] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 60, dur = 10 },
         -- Ashen Band of Unmatched Wisdom (Revered Caster/Healer - 268)
-        [50392] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        [50392] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 60, dur = 10 },
         -- Band of the Eternal Sage (TBC Hyjal Exalted Caster - 152)
-        [29305] = { keywords = { "eternalsage" }, spellIds = { [35084] = true }, icd = 45, dur = 10 },
+        [29305] = { keywords = { "eternalsage" }, spellIds = { [35084] = true }, icd = 60, dur = 10 },
         -- Band of the Eternal Restorer (TBC Hyjal Exalted Healer - 152)
-        [29309] = { keywords = { "eternalrestorer" }, spellIds = { [35087] = true }, icd = 45, dur = 10 },
+        [29309] = { keywords = { "eternalrestorer" }, spellIds = { [35087] = true }, icd = 60, dur = 10 },
     }
     _G.FMHUD_RingState = _G.FMHUD_RingState or { lastStart = 0, lastEnd = 0, isProc = false, lastItemID = 0 }
 
@@ -681,7 +681,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         local now = GetTime()
         local state = _G.FMHUD_RingState
         local entry = ringItemID and _G.FMHUD_RingDB and _G.FMHUD_RingDB[ringItemID]
-        local targetICD = (entry and entry.icd) or 45
+        local targetICD = (entry and entry.icd) or 60
         local defaultDur = (entry and entry.dur) or 10
 
         if state.lastItemID and ringItemID and state.lastItemID ~= ringItemID then
@@ -1252,7 +1252,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                                spellName == "Band of the Eternal Sage" or spellName == "Band of the Eternal Restorer" then
                             if _G.FMHUD_RingState then
                                 _G.FMHUD_RingState.lastStart = now
-                                _G.FMHUD_RingState.lastEnd = now + 45
+                                _G.FMHUD_RingState.lastEnd = now + 60
                                 _G.FMHUD_RingState.isProc = true
                             end
                             if WeakAuras and WeakAuras.ScanEvents then
