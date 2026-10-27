@@ -96,6 +96,7 @@ class TestHTMLSimultaneous(unittest.TestCase):
         if t8_active: sp += 350
         if dfo_active: sp += 605
         if cts_active: sp += 763
+        sp += 285  # Ashen Band of Endless Destruction proc
 
         # Verifica che i valori siano numeri finiti validi
         self.assertFalse(any(v != v for v in [sp, crit, haste, hit]), "Trovato valore NaN nel calcolo simultaneo")
@@ -117,7 +118,7 @@ class TestHTMLSimultaneous(unittest.TestCase):
             js = "\n".join(scripts)
 
             # Verifica che le funzioni asincrone con setInterval/setTimeout siano presenti
-            timer_functions = ["triggerT10", "triggerT8", "useTrinket1", "useTrinket2", "useManaGem"]
+            timer_functions = ["triggerT10", "triggerT8", "useTrinket1", "useTrinket2", "triggerRing", "useManaGem"]
             for fn in timer_functions:
                 self.assertIn(f"function {fn}", js, f"{fn} mancante in {fname}")
 

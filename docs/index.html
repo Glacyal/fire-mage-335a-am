@@ -1864,8 +1864,8 @@
                     <p>Core elements (Stats, Mana Bar, Utility Row) remain anchored. Alerts, Procs, and the Castbar expand smoothly upwards during combat without obscuring any active timers.</p>
                 </div>
                 <div class="compare-item">
-                    <strong>2. BiS Endgame Trinkets (DFO &amp; CTS)</strong>
-                    <p>Dedicated tracking for <code>Dislodged Foreign Object</code> and <code>Charred Twilight Scale</code>, complete with accurate 45s Internal Cooldown (ICD) clock swipes.</p>
+                    <strong>2. BiS Endgame Trinkets &amp; Ashen Ring</strong>
+                    <p>Dedicated tracking for <code>Dislodged Foreign Object</code>, <code>Charred Twilight Scale</code> (45s ICD), and <code>Ashen Band of Endless Destruction</code> (60s ICD), complete with accurate Internal Cooldown clock swipes.</p>
                 </div>
                 <div class="compare-item">
                     <strong>3. Dynamic Procs Group (Auto-Centering)</strong>
@@ -2401,6 +2401,16 @@
                 setBuffUI('boxIntellect', 'tagIntOff', 'OFF');
                 setFmState('OFF');
 
+                // Reset Ring timer in mode switch
+                sim.ringActive = false;
+                clearSimTimer('ring');
+                const tagRingShot = document.getElementById('tagRingTimer');
+                const swipeRingShot = document.getElementById('swipeRing');
+                const boxRingShot = document.getElementById('utilRing');
+                if (tagRingShot) tagRingShot.textContent = '';
+                if (swipeRingShot) swipeRingShot.classList.remove('active');
+                if (boxRingShot) boxRingShot.classList.remove('pixel-glow');
+
                 // Screenshot 1 utility timers
                 document.getElementById('tagGemTimer').textContent = '1.4';
                 document.getElementById('tagGemStack').textContent = '0';
@@ -2446,6 +2456,15 @@
                 sim.bootsActive = false;
                 sim.multiLBs = [];
                 renderMultiLbUI();
+
+                sim.ringActive = false;
+                clearSimTimer('ring');
+                const tagRingIdle = document.getElementById('tagRingTimer');
+                const swipeRingIdle = document.getElementById('swipeRing');
+                const boxRingIdle = document.getElementById('utilRing');
+                if (tagRingIdle) tagRingIdle.textContent = '';
+                if (swipeRingIdle) swipeRingIdle.classList.remove('active');
+                if (boxRingIdle) boxRingIdle.classList.remove('pixel-glow');
 
                 alertBox.style.display = 'none';
                 castbarWrap.classList.add('hidden');
