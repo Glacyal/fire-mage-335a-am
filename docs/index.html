@@ -723,7 +723,7 @@
         .wa-box .cd-swipe {
             position: absolute;
             inset: 0;
-            background: conic-gradient(rgba(0, 0, 0, 0.75) 0deg, rgba(0, 0, 0, 0.75) var(--cd-deg, 360deg), transparent var(--cd-deg, 360deg));
+            background: conic-gradient(transparent 0deg, transparent var(--cd-deg, 0deg), rgba(0, 0, 0, 0.75) var(--cd-deg, 0deg) 360deg);
             pointer-events: none;
             z-index: 4;
             display: none;
@@ -1455,11 +1455,13 @@
                     <!-- 1. Tier 10 (Pushing the Limit +12% Haste) -->
                     <div class="wa-box size-34 pixel-glow" id="procT10" onclick="triggerT10()" title="Tier 10: Pushing the Limit (+12% Haste)">
                         <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_elementaldevastation.jpg" alt="Tier 10">
+                        <div class="cd-swipe" id="swipeT10"></div>
                         <div class="tag-timer urgent" id="t10Timer"></div>
                     </div>
                     <!-- 2. Hot Streak -->
                     <div class="wa-box size-34 pixel-glow" id="procHotStreak" onclick="castPyroAction()" title="Hot Streak Proc (Instant Pyroblast)">
                         <img src="https://wow.zamimg.com/images/wow/icons/large/ability_mage_hotstreak.jpg" alt="Hot Streak">
+                        <div class="cd-swipe" id="swipeHs"></div>
                         <div class="tag-timer" id="hsTimer"></div>
                     </div>
                     <!-- 3. Clearcasting / Arcane Concentration -->
@@ -1984,6 +1986,21 @@
             }
         });
 
+        // Helper: Updates the circular cooldown clock swipe (0deg -> 360deg unveiling clockwise)
+        function updateSwipe(swipeId, remaining, total) {
+            const swipe = typeof swipeId === 'string' ? document.getElementById(swipeId) : swipeId;
+            if (!swipe) return;
+            if (remaining <= 0 || total <= 0) {
+                swipe.classList.remove('active');
+                swipe.style.removeProperty('--cd-deg');
+                return;
+            }
+            swipe.classList.add('active');
+            const elapsed = Math.max(0, Math.min(total, total - remaining));
+            const deg = ((elapsed / total) * 360).toFixed(1) + 'deg';
+            swipe.style.setProperty('--cd-deg', deg);
+        }
+
         function clearSimTimer(key) {
             if (sim.timers && sim.timers[key]) {
                 clearInterval(sim.timers[key]);
@@ -2159,11 +2176,17 @@
         function triggerHotStreakProc() {
             sim.hsProc = true;
             sim.hsProcRemaining = 10;
+            const tag = document.getElementById('hsTimer');
+            if (tag) tag.textContent = '10s';
+            updateSwipe('swipeHs', 10, 10);
             if (sim.hsProcTimer) clearInterval(sim.hsProcTimer);
             sim.hsProcTimer = setInterval(() => {
                 sim.hsProcRemaining -= 1;
                 if (sim.hsProcRemaining <= 0) {
                     cancelHotStreakProc();
+                } else {
+                    if (tag) tag.textContent = sim.hsProcRemaining + 's';
+                    updateSwipe('swipeHs', sim.hsProcRemaining, 10);
                 }
             }, 1000);
             renderHotStreakUI();
@@ -2177,6 +2200,9 @@
             }
             sim.hsProc = false;
             sim.hsProcRemaining = 0;
+            const tag = document.getElementById('hsTimer');
+            if (tag) tag.textContent = '';
+            updateSwipe('swipeHs', 0, 10);
             renderHotStreakUI();
             updateProcsVisibility();
         }
@@ -2797,23 +2823,26 @@
             spawnFCT('+12% Haste (T10)!', true);
             let rem = 5.0;
             const t10Timer = document.getElementById('t10Timer');
-            t10Timer.textContent = '5.0s';
+            if (t10Timer) t10Timer.textContent = '5.0s';
+            updateSwipe('swipeT10', rem, 5.0);
             
             sim.timers['t10'] = setInterval(() => {
                 rem -= 0.1;
                 if (rem <= 0 || !sim.t10Active || !sim.t10Equipped) {
                     clearSimTimer('t10');
                     sim.t10Active = false;
-                    t10Timer.textContent = '';
+                    if (t10Timer) t10Timer.textContent = '';
+                    updateSwipe('swipeT10', 0, 5.0);
                     updateProcsVisibility();
                     renderStats();
                 } else {
-                    t10Timer.textContent = rem.toFixed(1) + 's';
+                    if (t10Timer) t10Timer.textContent = rem.toFixed(1) + 's';
+                    updateSwipe('swipeT10', rem, 5.0);
                 }
             }, 100);
         }
 
-        // Proc Tier 8 (Praxis +350 SP)
+        // Proc Tier 8 (Praxis +350 SP - 15s buff, 45s ICD)
         function triggerT8() {
             if (!sim.t8Equipped) {
                 spawnFCT('T8 Not Equipped!', false);
@@ -2824,73 +2853,121 @@
             renderStats();
             spawnFCT('+350 SP (Praxis T8)!', true);
             const tagT8 = document.getElementById('tagT8Timer');
-            const swipe = document.getElementById('swipeT8');
-            swipe.classList.add('active');
-            tagT8.textContent = '15.0s';
-            let rem = 15.0;
+            const boxT8 = document.getElementById('utilTier8');
+            if (boxT8) boxT8.classList.add('pixel-glow');
+            let rem = 45;
+            if (tagT8) tagT8.textContent = '15s';
+            updateSwipe('swipeT8', rem, 45);
             sim.timers['t8'] = setInterval(() => {
-                rem -= 0.5;
-                if (rem <= 0 || !sim.t8Active || !sim.t8Equipped) {
+                rem--;
+                if (rem === 30) {
+                    sim.t8Active = false;
+                    if (boxT8) boxT8.classList.remove('pixel-glow');
+                    renderStats();
+                }
+                if (rem <= 0 || !sim.t8Equipped) {
                     clearSimTimer('t8');
                     sim.t8Active = false;
-                    tagT8.textContent = '';
-                    swipe.classList.remove('active');
+                    if (boxT8) boxT8.classList.remove('pixel-glow');
+                    updateSwipe('swipeT8', 0, 45);
+                    if (tagT8) tagT8.textContent = '';
                     renderStats();
                 } else {
-                    tagT8.textContent = rem.toFixed(0) + 's';
+                    updateSwipe('swipeT8', rem, 45);
+                    if (rem > 30) {
+                        tagT8.textContent = (rem - 30) + 's';
+                    } else {
+                        tagT8.textContent = rem + 's';
+                    }
                 }
-            }, 500);
+            }, 1000);
         }
 
-        // Trinket 1: DFO (Dislodged Foreign Object)
+        // Trinket 1: DFO (Dislodged Foreign Object - 20s buff, 45s ICD)
         function useTrinket1() {
             clearSimTimer('dfo');
             sim.dfoActive = true;
             renderStats();
             spawnFCT('+DFO Celestial Infusion!', true);
             const tag = document.getElementById('tagT1Timer');
-            const swipe = document.getElementById('swipeT1');
-            swipe.classList.add('active');
+            const box = document.getElementById('utilTrinket1');
+            const btnDfo = document.getElementById('btnDfoAct');
+            if (box) box.classList.add('pixel-glow');
+            if (btnDfo) btnDfo.textContent = '💎 DFO: ACTIVE';
             
             let rem = 45;
-            tag.textContent = rem + 's';
+            if (tag) tag.textContent = '20s';
+            updateSwipe('swipeT1', rem, 45);
             sim.timers['dfo'] = setInterval(() => {
                 rem--;
-                if (rem <= 25) sim.dfoActive = false;
+                if (rem === 25) {
+                    sim.dfoActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    if (btnDfo) btnDfo.textContent = '💎 DFO: ' + rem + 's ICD';
+                    renderStats();
+                } else if (rem < 25 && rem > 0) {
+                    if (btnDfo) btnDfo.textContent = '💎 DFO: ' + rem + 's ICD';
+                }
                 if (rem <= 0) {
                     clearSimTimer('dfo');
-                    swipe.classList.remove('active');
-                    tag.textContent = '';
+                    sim.dfoActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeT1', 0, 45);
+                    if (tag) tag.textContent = '';
+                    if (btnDfo) btnDfo.textContent = '💎 DFO (Rotface)';
+                    renderStats();
                 } else {
-                    tag.textContent = rem + 's';
+                    updateSwipe('swipeT1', rem, 45);
+                    if (rem > 25) {
+                        if (tag) tag.textContent = (rem - 25) + 's';
+                    } else {
+                        if (tag) tag.textContent = rem + 's';
+                    }
                 }
-                renderStats();
             }, 1000);
         }
 
-        // Trinket 2: CTS (Charred Twilight Scale)
+        // Trinket 2: CTS (Charred Twilight Scale - 15s buff, 45s ICD)
         function useTrinket2() {
             clearSimTimer('cts');
             sim.ctsActive = true;
             renderStats();
             spawnFCT('+CTS Twilight Flame!', true);
             const tag = document.getElementById('tagT2Timer');
-            const swipe = document.getElementById('swipeT2');
-            swipe.classList.add('active');
+            const box = document.getElementById('utilTrinket2');
+            const btnCts = document.getElementById('btnCtsAct');
+            if (box) box.classList.add('pixel-glow');
+            if (btnCts) btnCts.textContent = '🔥 CTS: ACTIVE (+763)';
 
             let rem = 45;
-            tag.textContent = rem + 's';
+            if (tag) tag.textContent = '15s';
+            updateSwipe('swipeT2', rem, 45);
             sim.timers['cts'] = setInterval(() => {
                 rem--;
-                if (rem <= 30) sim.ctsActive = false;
+                if (rem === 30) {
+                    sim.ctsActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    if (btnCts) btnCts.textContent = '🔥 CTS: ' + rem + 's ICD';
+                    renderStats();
+                } else if (rem < 30 && rem > 0) {
+                    if (btnCts) btnCts.textContent = '🔥 CTS: ' + rem + 's ICD';
+                }
                 if (rem <= 0) {
                     clearSimTimer('cts');
-                    swipe.classList.remove('active');
-                    tag.textContent = '';
+                    sim.ctsActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeT2', 0, 45);
+                    if (tag) tag.textContent = '';
+                    if (btnCts) btnCts.textContent = '🔥 CTS (Halion)';
+                    renderStats();
                 } else {
-                    tag.textContent = rem + 's';
+                    updateSwipe('swipeT2', rem, 45);
+                    if (rem > 30) {
+                        if (tag) tag.textContent = (rem - 30) + 's';
+                    } else {
+                        if (tag) tag.textContent = rem + 's';
+                    }
                 }
-                renderStats();
             }, 1000);
         }
 
@@ -3021,15 +3098,14 @@
             renderStats();
             spawnFCT('+Frostforged Sage (+285 SP)!', true);
             const tag = document.getElementById('tagRingTimer');
-            const swipe = document.getElementById('swipeRing');
             const box = document.getElementById('utilRing');
             const btnRing = document.getElementById('btnRingAct');
-            if (swipe) swipe.classList.add('active');
             if (box) box.classList.add('pixel-glow');
             if (btnRing) btnRing.textContent = '💍 Ring: ACTIVE (+285)';
 
             let rem = 60;
             if (tag) tag.textContent = '10s';
+            updateSwipe('swipeRing', rem, 60);
             sim.timers['ring'] = setInterval(() => {
                 rem--;
                 if (rem === 50) {
@@ -3042,10 +3118,12 @@
                 }
                 if (rem <= 0) {
                     clearSimTimer('ring');
-                    if (swipe) swipe.classList.remove('active');
+                    if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeRing', 0, 60);
                     if (tag) tag.textContent = '';
                     if (btnRing && sim.ringEquipped) btnRing.textContent = '💍 Ashen Band';
                 } else {
+                    updateSwipe('swipeRing', rem, 60);
                     if (rem > 50) {
                         if (tag) tag.textContent = (rem - 50) + 's';
                     } else {
@@ -3055,7 +3133,7 @@
             }, 1000);
         }
 
-        // Trigger Cloak
+        // Trigger Cloak: Lightweave Embroidery (+295 SP for 15s, 45s ICD)
         function triggerCloak() {
             if (!sim.cloakEquipped) {
                 spawnFCT('Cloak is not equipped!', false);
@@ -3063,17 +3141,44 @@
             }
             clearSimTimer('cloak');
             sim.cloakActive = true;
-            spawnFCT('+Lightweave Embroidery (+295 SP)!', false);
-            const swipe = document.getElementById('swipeCloak');
+            renderStats();
+            spawnFCT('+Lightweave Embroidery (+295 SP)!', true);
             const tag = document.getElementById('tagCloakTimer');
-            swipe.classList.add('active');
-            tag.textContent = '15s';
-            sim.timers['cloak'] = setTimeout(() => {
-                swipe.classList.remove('active');
-                tag.textContent = '';
-                sim.cloakActive = false;
-                clearSimTimer('cloak');
-            }, 15000);
+            const box = document.getElementById('utilCloak');
+            const btnCloak = document.getElementById('btnCloakAct');
+            if (box) box.classList.add('pixel-glow');
+            if (btnCloak) btnCloak.textContent = '🪡 Cloak: ACTIVE (+295)';
+
+            let rem = 45;
+            if (tag) tag.textContent = '15s';
+            updateSwipe('swipeCloak', rem, 45);
+            sim.timers['cloak'] = setInterval(() => {
+                rem--;
+                if (rem === 30) {
+                    sim.cloakActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    if (btnCloak && sim.cloakEquipped) btnCloak.textContent = '🪡 Cloak: ' + rem + 's ICD';
+                    renderStats();
+                } else if (rem < 30 && rem > 0) {
+                    if (btnCloak && sim.cloakEquipped) btnCloak.textContent = '🪡 Cloak: ' + rem + 's ICD';
+                }
+                if (rem <= 0) {
+                    clearSimTimer('cloak');
+                    sim.cloakActive = false;
+                    if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeCloak', 0, 45);
+                    if (tag) tag.textContent = '';
+                    if (btnCloak && sim.cloakEquipped) btnCloak.textContent = '🪡 Cloak (Lightweave)';
+                    renderStats();
+                } else {
+                    updateSwipe('swipeCloak', rem, 45);
+                    if (rem > 30) {
+                        if (tag) tag.textContent = (rem - 30) + 's';
+                    } else {
+                        if (tag) tag.textContent = rem + 's';
+                    }
+                }
+            }, 1000);
         }
 
         // 09 - Gloves (Engineering Hyperspeed Accelerators / Slot 10: +340 Haste for 12s, 60s CD)
@@ -3087,28 +3192,34 @@
             renderStats();
             spawnFCT('+340 Haste (Hyperspeed Accelerators)!', true);
             const tag = document.getElementById('tagGlovesTimer');
-            const swipe = document.getElementById('swipeGloves');
             const box = document.getElementById('utilGloves');
-            if (swipe) swipe.classList.add('active');
+            const btnGloves = document.getElementById('btnGlovesAct');
             if (box) box.classList.add('pixel-glow');
+            if (btnGloves) btnGloves.textContent = '🧤 Gloves: ACTIVE (+340)';
 
             let rem = 60;
             if (tag) tag.textContent = '12s';
+            updateSwipe('swipeGloves', rem, 60);
             sim.timers['gloves'] = setInterval(() => {
                 rem--;
                 if (rem === 48) {
                     sim.glovesActive = false;
                     if (box) box.classList.remove('pixel-glow');
+                    if (btnGloves && sim.glovesEquipped) btnGloves.textContent = '🧤 Gloves: ' + rem + 's CD';
                     renderStats();
+                } else if (rem < 48 && rem > 0) {
+                    if (btnGloves && sim.glovesEquipped) btnGloves.textContent = '🧤 Gloves: ' + rem + 's CD';
                 }
                 if (rem <= 0) {
                     clearSimTimer('gloves');
                     sim.glovesActive = false;
-                    if (swipe) swipe.classList.remove('active');
-                    if (tag) tag.textContent = '';
                     if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeGloves', 0, 60);
+                    if (tag) tag.textContent = '';
+                    if (btnGloves && sim.glovesEquipped) btnGloves.textContent = '🧤 Gloves (Haste)';
                     renderStats();
                 } else {
+                    updateSwipe('swipeGloves', rem, 60);
                     if (rem > 48) {
                         if (tag) tag.textContent = (rem - 48) + 's';
                     } else {
@@ -3327,6 +3438,7 @@
 
             let rem = 180;
             if (tag) tag.textContent = '5s';
+            updateSwipe('swipeBoots', rem, 180);
             sim.timers['boots'] = setInterval(() => {
                 rem--;
                 if (rem === 175) {
@@ -3336,10 +3448,11 @@
                 if (rem <= 0) {
                     clearSimTimer('boots');
                     sim.bootsActive = false;
-                    if (swipe) swipe.classList.remove('active');
-                    if (tag) tag.textContent = '';
                     if (box) box.classList.remove('pixel-glow');
+                    updateSwipe('swipeBoots', 0, 180);
+                    if (tag) tag.textContent = '';
                 } else {
+                    updateSwipe('swipeBoots', rem, 180);
                     if (rem > 175) {
                         if (tag) tag.textContent = (rem - 175) + 's';
                     } else {
@@ -3365,6 +3478,7 @@
             let rem = 12.0;
             tag.textContent = '12s';
             
+            updateSwipe('swipeLb', rem, 12.0);
             sim.timers['lb'] = setInterval(() => {
                 rem -= 1.0;
                 if (rem <= 0 || !sim.lbActive) {
@@ -3373,11 +3487,12 @@
                         spawnFCT('💥 LB EXPLOSION: 8,450', true);
                     }
                     sim.lbActive = false;
-                    swipe.classList.remove('active');
-                    tag.textContent = '';
+                    updateSwipe('swipeLb', 0, 12.0);
+                    if (tag) tag.textContent = '';
                     updateProcsVisibility();
                 } else {
-                    tag.textContent = rem.toFixed(0) + 's';
+                    if (tag) tag.textContent = rem.toFixed(0) + 's';
+                    updateSwipe('swipeLb', rem, 12.0);
                 }
             }, 1000);
         }
