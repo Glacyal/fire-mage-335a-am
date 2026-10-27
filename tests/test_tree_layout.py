@@ -21,6 +21,7 @@ def test_tree_structure():
     children_ids = [c['id'] for c in tree['c']]
     print(f"Total children count: {len(children_ids)}")
     
+    assert "06b - Ring" in children_ids, "06b - Ring missing from tree!"
     assert "08 - Tier 8" in children_ids, "08 - Tier 8 missing from tree!"
     assert "09 - Gloves" in children_ids, "09 - Gloves missing from tree!"
     assert "13 - Boots" in children_ids, "13 - Boots missing from tree!"
@@ -35,6 +36,10 @@ def test_tree_structure():
     hotstreak_idx = children_ids.index("Hot Streak")
     assert t10_idx < hotstreak_idx, f"Tier 10 ({t10_idx}) must precede Hot Streak ({hotstreak_idx}) in c array!"
     
+    t1_idx = children_ids.index("05 - Trinket 1")
+    t2_idx = children_ids.index("06 - Trinket 2")
+    ring_idx = children_ids.index("06b - Ring")
+    cloak_idx = children_ids.index("07 - Cloak")
     t8_idx = children_ids.index("08 - Tier 8")
     gloves_idx = children_ids.index("09 - Gloves")
     gem_idx = children_ids.index("10 - Mana Gem")
@@ -42,14 +47,20 @@ def test_tree_structure():
     mirror_idx = children_ids.index("12 - Mirror Image")
     boots_idx = children_ids.index("13 - Boots")
     
-    print(f"Indices: T10={t10_idx}, HotStreak={hotstreak_idx}, T8={t8_idx}, Gloves={gloves_idx}, Gem={gem_idx}, Comb={comb_idx}, Mirror={mirror_idx}, Boots={boots_idx}")
-    assert t8_idx < gloves_idx < gem_idx < comb_idx < mirror_idx < boots_idx, (
-        f"Utility ordering violation: expected T8 < Gloves < Gem < Comb < Mirror < Boots, got {t8_idx}, {gloves_idx}, {gem_idx}, {comb_idx}, {mirror_idx}, {boots_idx}"
+    print(f"Indices: T10={t10_idx}, HotStreak={hotstreak_idx}, T1={t1_idx}, T2={t2_idx}, Ring={ring_idx}, Cloak={cloak_idx}, T8={t8_idx}, Gloves={gloves_idx}, Gem={gem_idx}, Comb={comb_idx}, Mirror={mirror_idx}, Boots={boots_idx}")
+    assert t1_idx < t2_idx < ring_idx < cloak_idx < t8_idx < gloves_idx < gem_idx < comb_idx < mirror_idx < boots_idx, (
+        f"Utility ordering violation: expected T1 < T2 < Ring < Cloak < T8 < Gloves < Gem < Comb < Mirror < Boots"
     )
     print("[OK] Tree ordering test: PASSED")
 
 def test_layout_math():
-    # Scenario 0: 9 componenti (Tutti attivi: T1, T2, Cloak, T8, Gloves, Gem, Comb, Mirror, Boots; passo 29px, w 28px)
+    # Scenario 0: 10 componenti (Tutti attivi: T1, T2, Ring, Cloak, T8, Gloves, Gem, Comb, Mirror, Boots; passo 26px, w 26px)
+    pos_10 = [round((i - 5.5) * 26) for i in range(1, 11)]
+    total_span_10 = (pos_10[-1] + 13) - (pos_10[0] - 13)
+    print(f"[OK] 10-component span: {total_span_10}px (sotto la barra da 264px, margine: {264 - total_span_10}px)")
+    assert total_span_10 <= 264, f"Span {total_span_10} exceeds 264px bar!"
+
+    # Scenario 0b: 9 componenti (T1, T2, Cloak, T8, Gloves, Gem, Comb, Mirror, Boots; passo 29px, w 28px)
     pos_9 = [round((i - 5) * 29) for i in range(1, 10)]
     total_span_9 = (pos_9[-1] + 14) - (pos_9[0] - 14)
     print(f"[OK] 9-component span: {total_span_9}px (sotto la barra da 264px, margine: {264 - total_span_9}px)")

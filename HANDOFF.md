@@ -131,11 +131,12 @@ Per apportare modifiche alla suite o estendere la logica:
 - **Proc 10s Personale**: Quando l'alleato mette a segno un critico, compare con swipe e conto alla rovescia (+3% Crit per 10s).
 - **Allerta OFF**: Se il buff non è assegnato a nessuno o se l'alleato muore, compare l'icona desaturata con avviso `OFF` rosso.
 
-### 4.4 Centratura Dinamica Riga Utility (`05` - `13`, da 3 a 9 Icone)
+### 4.4 Centratura Dinamica Riga Utility (`05` - `13`, da 3 a 10 Icone)
 - **Ordine rigoroso da sinistra a destra**:
-  `[05 - Trinket 1] -> [06 - Trinket 2] -> [07 - Cloak] -> [08 - Tier 8] -> [09 - Gloves] -> [10 - Mana Gem] -> [11 - Combustion] -> [12 - Mirror Image] -> [13 - Boots]`
+  `[05 - Trinket 1] -> [06 - Trinket 2] -> [06b - Ring] -> [07 - Cloak] -> [08 - Tier 8] -> [09 - Gloves] -> [10 - Mana Gem] -> [11 - Combustion] -> [12 - Mirror Image] -> [13 - Boots]`
 - **Condizioni di visibilità e attivazione**:
   - **Trinket 1 & 2 (Slot 13 e 14)**: Visibili solo se gli slot sono equipaggiati con un monile valido (nascosti se vuoti).
+  - **Anello con Proc (Slot 11 o 12 - Opzione B: `06b - Ring`)**: Visibile solo se equipaggiato con un anello con proc da incantatore/healer (Ashen Band Exalted/Revered: 50398, 50397, 50400, 50392, o legacy Hyjal 29305, 29309). Traccia *Frostforged Sage* (+285 SP, 10s durata, 45s ICD), swipe, conto alla rovescia e Pixel Glow.
   - **Mantello (Slot 15)**: Visibile solo se possiede un incanto con proc di potenziamento (*Lightweave*, *Darkglow*, *Swordguard*, *Flexweave*, ecc.).
   - **Tier 8 2P (Praxis)**: Visibile solo con $\ge 2$ pezzi del set T8 Kirin Tor equipaggiati (+350 SP, 45s ICD).
   - **Guanti (Slot 10)**: Visibili solo se equipaggiati con l'incanto Ingegneria *Acceleratori Ipersonici* (+340 Haste per 12s, 60s CD con filtro lockout condiviso < 45s).
@@ -156,7 +157,7 @@ Il modulo `builder/components/stats.py` impedisce la duplicazione di buff raid d
 
 ### 4.6 Castbar e Convenzioni di Struttura (`16 - Castbar`)
 - **Castbar con Icona Spell Integrata**: Include l'icona dell'incantesimo attivo posizionata sul bordo sinistro della barra, timer di cast e barra di latenza di rete (*Safe Zone*).
-- **Numerazione Continua dei Componenti**: Tutti i componenti primari del gruppo root seguono la sequenza continua `01`–`19`, garantendo perfetta corrispondenza tra i moduli generati da `builder/`, la stringa importabile e il simulatore web.
+- **Numerazione Continua e Opzione B**: I componenti primari del gruppo root mantengono la sequenza consolidata `01`–`19`, con l'inserimento non invasivo di `06b - Ring` tra i Monili e il Mantello (Opzione B), garantendo perfetta continuità degli identificativi storici `07`–`19`.
 
 ### 4.7 Multi-Target Living Bomb Tracker (`19 - Multi-Target Living Bomb`)
 - **Posizione & Layout**: Dynamic Group verticale posizionato a destra dell'HUD per monitorare fino a 5 Living Bomb attive contemporaneamente.

@@ -64,6 +64,22 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         [15] = { lastStart = 0, lastEnd = 0, isProc = false, lastItemID = 0 },
     }
 
+    _G.FMHUD_RingDB = {
+        -- Ashen Band of Endless Destruction (Exalted Caster DPS - 277)
+        [50398] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        -- Ashen Band of Unmatched Destruction (Revered Caster DPS - 268)
+        [50397] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        -- Ashen Band of Endless Wisdom (Exalted Caster/Healer - 277)
+        [50400] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        -- Ashen Band of Unmatched Wisdom (Revered Caster/Healer - 268)
+        [50392] = { keywords = { "frostforgedsage", "chillingknowledge" }, spellIds = { [72416] = true, [72418] = true }, icd = 45, dur = 10 },
+        -- Band of the Eternal Sage (TBC Hyjal Exalted Caster - 152)
+        [29305] = { keywords = { "eternalsage" }, spellIds = { [35084] = true }, icd = 45, dur = 10 },
+        -- Band of the Eternal Restorer (TBC Hyjal Exalted Healer - 152)
+        [29309] = { keywords = { "eternalrestorer" }, spellIds = { [35087] = true }, icd = 45, dur = 10 },
+    }
+    _G.FMHUD_RingState = _G.FMHUD_RingState or { lastStart = 0, lastEnd = 0, isProc = false, lastItemID = 0 }
+
     _G.FMHUD_TrinketDB = {
         -- The Dying Curse
         [40255] = { keywords = { "dyingcurse", "curseoftheeye", "thedyingcurse" }, spellIds = { [60494] = true, [60493] = true, [60492] = true, [60491] = true }, icd = 45, dur = 10 },
@@ -133,9 +149,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         [44014] = { keywords = { "morale" }, icd = 120, dur = 20, onUse = true },
         -- DMC Death
         [42990] = { keywords = { "darkmooncarddeath" }, spellIds = { [60203] = true }, icd = 45, dur = 0 },
-        -- Ashen Band
-        [50398] = { keywords = { "peerlessdestruction" }, spellIds = { [73077] = true }, icd = 60, dur = 10 },
-        [50400] = { keywords = { "peerlessdestruction" }, spellIds = { [73077] = true }, icd = 60, dur = 10 },
+
     }
 
     _G.FMHUD_AllCasterKeywords = {
@@ -146,7 +160,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         "volatilepower", "chilledheart", "celestialinfusion", "siphonofaethas",
         "aethassiphon", "aethas", "gatheringtracker", "sharedtwilight",
         "twilightflame", "twilightserpent", "sapphireowl", "pureenergy", "revitalized",
-        "fusillade", "morale", "battlemaster", "medallion", "peerlessdestruction"
+        "fusillade", "morale", "battlemaster", "medallion"
     }
 
     _G.FMHUD_CloakKeywords = { "lightweave", "darkglow", "swordguard", "parachute", "flexweave", "springyarachnoweave", "luce intessuta", "spadatesta", "bagliore oscuro", "flessibile", "aracnide" }
@@ -588,6 +602,173 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         return finish("READY", 0, 0, nil)
     end
 
+    _G.FMHUD_CheckRingEquipped = function()
+        local now = GetTime()
+        local cache = _G.FMHUD_RingEquipCache
+        if cache and (now - cache.time < 0.25) then
+            return cache.isEquipped, cache.slot, cache.itemID
+        end
+        if not cache then
+            cache = { time = 0, isEquipped = false, slot = nil, itemID = nil }
+            _G.FMHUD_RingEquipCache = cache
+        end
+        cache.time = now
+
+        for _, s in ipairs({ 11, 12 }) do
+            local id = GetInventoryItemID("player", s)
+            if not id then
+                local link = GetInventoryItemLink("player", s)
+                if link then id = tonumber(link:match("item:(%d+)")) end
+            end
+            if id and _G.FMHUD_RingDB and _G.FMHUD_RingDB[id] then
+                cache.isEquipped = true
+                cache.slot = s
+                cache.itemID = id
+                return true, s, id
+            end
+        end
+
+        local buffs = _G.FMHUD_GetPlayerBuffs and _G.FMHUD_GetPlayerBuffs()
+        if buffs then
+            if buffs.bySpellId[72416] or buffs.bySpellId[72418] or buffs.bySpellId[35084] or buffs.bySpellId[35087] then
+                cache.isEquipped = true
+                cache.slot = 11
+                cache.itemID = 50398
+                return true, 11, 50398
+            end
+        end
+
+        local tt = _G.FMHUD_ScanTT
+        if not tt then
+            tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
+            tt:SetOwner(UIParent, "ANCHOR_NONE")
+            _G.FMHUD_ScanTT = tt
+        end
+        for _, s in ipairs({ 11, 12 }) do
+            local id = GetInventoryItemID("player", s)
+            if id then
+                tt:ClearLines()
+                tt:SetInventoryItem("player", s)
+                for j = 1, tt:NumLines() do
+                    local line = _G["FMHUD_ScanTTTextLeft"..j]
+                    local text = line and line:GetText()
+                    if text then
+                        local lt = text:lower()
+                        if lt:find("frostforged") or lt:find("chilling knowledge") or
+                           lt:find("potenza magica di 285") or lt:find("spell power by 285") or
+                           lt:find("eternal sage") or lt:find("potenza magica di 95") or lt:find("spell power by 95") then
+                            cache.isEquipped = true
+                            cache.slot = s
+                            cache.itemID = id
+                            return true, s, id
+                        end
+                    end
+                end
+            end
+        end
+
+        cache.isEquipped = false
+        cache.slot = nil
+        cache.itemID = nil
+        return false, nil, nil
+    end
+
+    _G.FMHUD_CheckRing = function()
+        local isEquipped, ringSlot, ringItemID = _G.FMHUD_CheckRingEquipped()
+        local defIcon = (ringItemID and GetItemIcon(ringItemID)) or "Interface/Icons/inv_jewelry_ring_83"
+        if not isEquipped then return "NONE", 0, 0, defIcon, false end
+
+        local now = GetTime()
+        local state = _G.FMHUD_RingState
+        local entry = ringItemID and _G.FMHUD_RingDB and _G.FMHUD_RingDB[ringItemID]
+        local targetICD = (entry and entry.icd) or 45
+        local defaultDur = (entry and entry.dur) or 10
+
+        if state.lastItemID and ringItemID and state.lastItemID ~= ringItemID then
+            state.lastStart = 0
+            state.lastEnd = 0
+            state.isProc = false
+        end
+        if ringItemID then state.lastItemID = ringItemID end
+
+        local foundBuff = false
+        local remBuff = 0
+        local durBuff = defaultDur
+        local buffIcon = nil
+
+        local buffs = _G.FMHUD_GetPlayerBuffs and _G.FMHUD_GetPlayerBuffs()
+        local buffList = buffs and buffs.list
+        local numBuffs = buffList and #buffList or 40
+
+        for i = 1, numBuffs do
+            local name, icon, count, duration, expirationTime, spellId
+            if buffList then
+                local b = buffList[i]
+                if not b then break end
+                name = b.name
+                icon = b.icon
+                count = b.count
+                duration = b.duration
+                expirationTime = b.expirationTime
+                spellId = b.spellId
+            else
+                local n, _, ic, ct, _, dur, exp, _, _, _, spId = UnitBuff("player", i)
+                if not n then break end
+                name = n
+                icon = ic
+                count = ct
+                duration = dur
+                expirationTime = exp
+                spellId = spId
+            end
+
+            local isMatch = false
+            if spellId and (spellId == 72416 or spellId == 72418 or spellId == 35084 or spellId == 35087) then
+                isMatch = true
+            elseif name then
+                local cName = string.lower(name):gsub("[%s%p%c]", "")
+                if cName:find("frostforgedsage", 1, true) or cName:find("chillingknowledge", 1, true) or
+                   cName:find("eternalsage", 1, true) or cName:find("eternalrestorer", 1, true) then
+                    isMatch = true
+                end
+            end
+
+            if isMatch then
+                foundBuff = true
+                durBuff = (duration and duration > 0) and duration or defaultDur
+                remBuff = (expirationTime and expirationTime > 0) and (expirationTime - now) or durBuff
+                buffIcon = icon or defIcon
+                break
+            end
+        end
+
+        if foundBuff then
+            if not state.isProc or (now - state.lastStart > durBuff + 2) then
+                state.lastStart = now - (durBuff - remBuff)
+                state.lastEnd = state.lastStart + targetICD
+                state.isProc = true
+            end
+            return "ACTIVE", remBuff, durBuff, buffIcon or defIcon, true
+        end
+
+        if state.isProc then
+            state.isProc = false
+            if state.lastEnd == 0 or state.lastEnd > now then
+                state.lastEnd = now
+            end
+        end
+
+        if state.lastStart > 0 and targetICD > 0 then
+            local elapsed = now - state.lastStart
+            if elapsed < targetICD then
+                local remICD = targetICD - elapsed
+                return "COOLDOWN", remICD, targetICD, defIcon, true
+            end
+        end
+
+        return "READY", 0, 0, defIcon, true
+    end
+
     _G.FMHUD_CheckT8Equipped = function()
         local now = GetTime()
         local cache = _G.FMHUD_T8_EquipCache
@@ -968,6 +1149,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
 
         local hasT1 = _G.FMHUD_CheckSlotEquipped and _G.FMHUD_CheckSlotEquipped(13)
         local hasT2 = _G.FMHUD_CheckSlotEquipped and _G.FMHUD_CheckSlotEquipped(14)
+        local hasRing = _G.FMHUD_CheckRingEquipped and _G.FMHUD_CheckRingEquipped()
         local hasCloak = _G.FMHUD_CheckSlotEquipped and _G.FMHUD_CheckSlotEquipped(15)
         local hasT8 = _G.FMHUD_CheckT8Equipped and _G.FMHUD_CheckT8Equipped()
         local hasGloves = _G.FMHUD_CheckSlotEquipped and _G.FMHUD_CheckSlotEquipped(10)
@@ -976,6 +1158,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         local activeOrder = {}
         if hasT1 then table.insert(activeOrder, "05 - Trinket 1") end
         if hasT2 then table.insert(activeOrder, "06 - Trinket 2") end
+        if hasRing then table.insert(activeOrder, "06b - Ring") end
         if hasCloak then table.insert(activeOrder, "07 - Cloak") end
         if hasT8 then table.insert(activeOrder, "08 - Tier 8") end
         if hasGloves then table.insert(activeOrder, "09 - Gloves") end
@@ -986,14 +1169,23 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
 
         local N = #activeOrder
         local step = 38
-        if N >= 9 then step = 29
-        elseif N == 8 then step = 32
-        elseif N == 7 then step = 38
-        elseif N == 6 then step = 44
-        elseif N == 5 then step = 48
-        else step = 52 end
-
         local targetW = 28
+        if N >= 10 then
+            step = 26
+            targetW = 26
+        elseif N == 9 then
+            step = 29
+        elseif N == 8 then
+            step = 32
+        elseif N == 7 then
+            step = 38
+        elseif N == 6 then
+            step = 44
+        elseif N == 5 then
+            step = 48
+        else
+            step = 52
+        end
         for i, id in ipairs(activeOrder) do
             local targetX = math.floor(((i - (N + 1) / 2) * step) + 0.5)
             local regObj = WeakAuras.regions[id]
@@ -1055,6 +1247,17 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                             if WeakAuras and WeakAuras.ScanEvents then
                                 WeakAuras.ScanEvents("FMHUD_ROW_UPDATE")
                             end
+                        elseif spellId == 72416 or spellId == 72418 or spellId == 35084 or spellId == 35087 or
+                               spellName == "Frostforged Sage" or spellName == "Chilling Knowledge" or
+                               spellName == "Band of the Eternal Sage" or spellName == "Band of the Eternal Restorer" then
+                            if _G.FMHUD_RingState then
+                                _G.FMHUD_RingState.lastStart = now
+                                _G.FMHUD_RingState.lastEnd = now + 45
+                                _G.FMHUD_RingState.isProc = true
+                            end
+                            if WeakAuras and WeakAuras.ScanEvents then
+                                WeakAuras.ScanEvents("FMHUD_ROW_UPDATE")
+                            end
                         end
                     end
                 end
@@ -1094,6 +1297,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
             _G.FMHUD_BuffCache = nil
             _G.FMHUD_T8_EquipCache = nil
             _G.FMHUD_SlotEquipCache = nil
+            _G.FMHUD_RingEquipCache = nil
             if WeakAuras and WeakAuras.ScanEvents then
                 WeakAuras.ScanEvents("FMHUD_ROW_UPDATE")
             end
@@ -1191,6 +1395,81 @@ def make_slot_untrigger_custom(slot: int) -> str:
     return f"""function(event, ...)
     if not _G.FMHUD_CheckSlotEquipped then return true end
     return not _G.FMHUD_CheckSlotEquipped({slot})
+end"""
+
+
+def make_ring_custom_text() -> str:
+    """Testo descrittivo del proc dell'anello (%c), con pixel glow su proc attivo e timer ICD."""
+    return """function()
+    if not _G.FMHUD_CoreInitDone and _G.FMHUD_InitCore then _G.FMHUD_InitCore() end
+    if _G.FMHUD_UpdateUtilityRowPositions then
+        _G.FMHUD_UpdateUtilityRowPositions()
+    end
+    if not _G.FMHUD_CheckRing then return "" end
+    local state, rem, dur, icon, isEquipped = _G.FMHUD_CheckRing()
+    local LCG = LibStub and LibStub("LibCustomGlow-1.0", true)
+    local glowKey = "FMHUD_RING_GLOW"
+    if state == "ACTIVE" then
+        if LCG and aura_env and aura_env.region then
+            LCG.PixelGlow_Start(aura_env.region, {{1, 0.85, 0.1, 1}}, 8, 0.25, 10, 2, 0, 0, false, glowKey)
+        end
+        return string.format("|cFFFFFF00%.1fs|r", rem)
+    else
+        if LCG and aura_env and aura_env.region then
+            LCG.PixelGlow_Stop(aura_env.region, glowKey)
+        end
+        if (state == "ICD" or state == "COOLDOWN") and rem > 0.1 then
+            if rem >= 60 then
+                local m = math.floor(rem / 60)
+                local s = math.floor(rem % 60)
+                return string.format("%d:%02d", m, s)
+            else
+                return string.format("%.0f", rem)
+            end
+        end
+        return ""
+    end
+end"""
+
+
+def make_ring_custom_duration() -> str:
+    """Durata e scadenza dello swipe di ricarica/ICD per l'anello."""
+    return """function()
+    if not _G.FMHUD_CheckRing then return 0, 0 end
+    local state, rem, dur = _G.FMHUD_CheckRing()
+    if (state == "ACTIVE" or state == "ICD" or state == "COOLDOWN") and rem > 0 and dur > 0 then
+        return dur, GetTime() + rem
+    end
+    return 0, 0
+end"""
+
+
+def make_ring_custom_icon() -> str:
+    """Icona dinamica dell'anello equipaggiato o del proc attivo (Frostforged Sage)."""
+    return """function()
+    if not _G.FMHUD_CoreInitDone and _G.FMHUD_InitCore then _G.FMHUD_InitCore() end
+    if _G.FMHUD_CheckRing then
+        local state, rem, dur, icon = _G.FMHUD_CheckRing()
+        if icon then return icon end
+    end
+    return "Interface/Icons/inv_jewelry_ring_83"
+end"""
+
+
+def make_ring_trigger_custom() -> str:
+    """Trigger custom per verificare se un anello con proc è equipaggiato."""
+    return """function(event, ...)
+    if not _G.FMHUD_CoreInitDone and _G.FMHUD_InitCore then _G.FMHUD_InitCore() end
+    if not _G.FMHUD_CheckRingEquipped then return false end
+    return _G.FMHUD_CheckRingEquipped()
+end"""
+
+
+def make_ring_untrigger_custom() -> str:
+    """Untrigger custom quando nessun anello con proc è equipaggiato."""
+    return """function(event, ...)
+    if not _G.FMHUD_CheckRingEquipped then return true end
+    return not _G.FMHUD_CheckRingEquipped()
 end"""
 
 
@@ -1463,9 +1742,10 @@ end"""
 # =============================================================================
 def build_utility_auras() -> list[dict]:
     """
-    Costruisce e restituisce le 9 aure che compongono la fila utility inferiore:
+    Costruisce e restituisce le 10 aure che compongono la fila utility inferiore:
     - 05 - Trinket 1 (Icon, Slot 13)
     - 06 - Trinket 2 (Icon, Slot 14)
+    - 06b - Ring (Icon, Slot 11 o 12 - Ashen Verdict / Eternal Sage proc ring)
     - 07 - Cloak (Icon, Slot 15)
     - 08 - Tier 8 (Icon, T8 2P)
     - 09 - Gloves (Icon, Slot 10 - Acceleratori Ipersonici Ingegneria)
@@ -1484,7 +1764,7 @@ def build_utility_auras() -> list[dict]:
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": -116,
+            "xOffset": -117,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1525,7 +1805,7 @@ def build_utility_auras() -> list[dict]:
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": -87,
+            "xOffset": -91,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1559,6 +1839,48 @@ def build_utility_auras() -> list[dict]:
             ],
         },
 
+        # 06b - Ring (Slot 11 or 12 - Ashen Verdict / Eternal Sage proc ring)
+        {
+            "id": "06b - Ring",
+            "uid": "FMHUD_RING",
+            "parent": "Class Mage (TTW Fire)",
+            "regionType": "icon",
+            "internalVersion": 52,
+            "xOffset": -65,
+            "yOffset": -45,
+            "width": 28,
+            "height": 28,
+            "displayIcon": "Interface/Icons/inv_jewelry_ring_83",
+            "cooldown": True,
+            "cooldownSwipe": True,
+            "cooldownEdge": True,
+            "cooldownTextDisabled": True,
+            "inverse": False,
+            "customTextUpdate": "update",
+            "customText": make_ring_custom_text(),
+            "triggers": {
+                1: {
+                    "trigger": {
+                        "type": "custom",
+                        "custom_type": "status",
+                        "check": "update",
+                        "events": events_list,
+                        "custom": make_ring_trigger_custom(),
+                        "customDuration": make_ring_custom_duration(),
+                        "customIcon": make_ring_custom_icon(),
+                    },
+                    "untrigger": {
+                        "custom": make_ring_untrigger_custom()
+                    }
+                },
+                "activeTriggerMode": -10,
+            },
+            "subRegions": [
+                {"type": "subbackground"},
+                make_subtext("%c", justify="CENTER", anchor_point="CENTER", font_size=10),
+            ],
+        },
+
         # 07 - Cloak (Slot 15)
         {
             "id": "07 - Cloak",
@@ -1566,7 +1888,7 @@ def build_utility_auras() -> list[dict]:
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": -58,
+            "xOffset": -39,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1608,7 +1930,7 @@ def build_utility_auras() -> list[dict]:
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": -29,
+            "xOffset": -13,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1657,7 +1979,7 @@ end"""
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": 0,
+            "xOffset": 13,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1699,7 +2021,7 @@ end"""
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": 29,
+            "xOffset": 39,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1766,7 +2088,7 @@ end"""
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": 58,
+            "xOffset": 65,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1811,7 +2133,7 @@ end"""
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": 87,
+            "xOffset": 91,
             "yOffset": -45,
             "width": 28,
             "height": 28,
@@ -1856,7 +2178,7 @@ end"""
             "parent": "Class Mage (TTW Fire)",
             "regionType": "icon",
             "internalVersion": 52,
-            "xOffset": 116,
+            "xOffset": 117,
             "yOffset": -45,
             "width": 28,
             "height": 28,

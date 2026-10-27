@@ -55,7 +55,7 @@ class TestComponentsIntegrity(unittest.TestCase):
         """Verifica il conteggio totale delle aure (44) e l'unicità di ID e UID."""
         tree = build_wa_tree()
         children = tree["c"]
-        self.assertEqual(len(children), 44, f"Previste 44 aure, trovate {len(children)}")
+        self.assertEqual(len(children), 45, f"Previste 45 aure, trovate {len(children)}")
 
         seen_ids = set()
         seen_uids = set()
@@ -104,16 +104,20 @@ class TestComponentsIntegrity(unittest.TestCase):
         self.assertEqual(castbar.get("iconSource"), -1, "iconSource deve essere -1 (automatico da trigger/spell)")
 
     def test_controlled_children_continuous_numbering(self):
-        """Verifica che tutte le 19 voci abbiano numerazione sequenziale continua da 01 a 19."""
+        """Verifica che le voci abbiano numerazione continua da 01 a 19 con '06b - Ring' interposto (Opzione B)."""
         tree = build_wa_tree()
         children = tree["d"]["controlledChildren"]
-        self.assertEqual(len(children), 19, f"Previsti 19 controlledChildren, trovati {len(children)}")
-        for i, child_id in enumerate(children, start=1):
+        self.assertEqual(len(children), 20, f"Previsti 20 controlledChildren, trovati {len(children)}")
+        # Controlla 01 - Procs fino a 06 - Trinket 2
+        for i in range(1, 7):
             expected_prefix = f"{i:02d} - "
-            self.assertTrue(
-                child_id.startswith(expected_prefix),
-                f"Elemento {i} non inizia con il prefisso atteso '{expected_prefix}': trovato '{child_id}'"
-            )
+            self.assertTrue(children[i - 1].startswith(expected_prefix))
+        # Controlla 06b - Ring
+        self.assertEqual(children[6], "06b - Ring")
+        # Controlla 07 - Cloak fino a 19 - Multi-Target Living Bomb
+        for i in range(7, 20):
+            expected_prefix = f"{i:02d} - "
+            self.assertTrue(children[i].startswith(expected_prefix))
 
     def test_molten_fury_unit_filter_in_lua_code(self):
         """

@@ -55,6 +55,7 @@ def build_wa_tree() -> dict:
                 "04 - Focus Magic",
                 "05 - Trinket 1",
                 "06 - Trinket 2",
+                "06b - Ring",
                 "07 - Cloak",
                 "08 - Tier 8",
                 "09 - Gloves",

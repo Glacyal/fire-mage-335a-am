@@ -53,9 +53,10 @@ Posizionato nella parte superiore dell'HUD, gestisce fino a 8 icone con riposizi
 - **16 - Castbar**: Barra di lancio con icona dell'incantesimo attivo, nome, tempo residuo e indicatore di latenza.
 - **17 - Alerts**: Messaggio testuale visibile a centro schermo all'attivazione di Hot Streak.
 
-### 5. Riga Utility Adattiva (`05` - `13`, da 3 a 9 Icone)
+### 5. Riga Utility Adattiva (`05` - `13`, da 3 a 10 Icone)
 La riga inferiore si adatta in tempo reale con centratura automatica in base all'equipaggiamento indossato:
 - **05 - Trinket 1** e **06 - Trinket 2**: Visibili solo se gli slot sono equipaggiati, con timer del recupero interno (ICD) e bordo luminoso su proc attivo.
+- **06b - Ring**: Compare solo se è equipaggiato nello slot anello un anello con proc attivo da incantatore/healer (es. *Ashen Band of Endless Destruction* o *Endless Wisdom* di ICC, oppure *Band of the Eternal Sage* di Mount Hyjal). Monitora il proc *Frostforged Sage* (+285 SP per 10s, ICD di 45s con swipe e Pixel Glow).
 - **07 - Cloak**: Compare solo se il mantello ha un incanto con proc attivo (es. *Ricamo di Luce Intessuta*).
 - **08 - Tier 8**: Compare solo equipaggiando almeno 2 pezzi del set T8, tracciando il bonus +350 Spell Power.
 - **09 - Gloves**: Compare solo se i guanti possiedono gli *Acceleratori Ipersonici* di Ingegneria.

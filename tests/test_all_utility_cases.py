@@ -28,7 +28,9 @@ def compute_utility_layout(active_ids):
     Replica fedelmente la logica di calcolo delle coordinate di _G.FMHUD_UpdateUtilityRowPositions in Lua.
     """
     N = len(active_ids)
-    if N >= 9:
+    if N >= 10:
+        step = 26
+    elif N == 9:
         step = 29
     elif N == 8:
         step = 32
@@ -50,16 +52,16 @@ def compute_utility_layout(active_ids):
 
 class TestAllUtilityCases(unittest.TestCase):
 
-    def test_all_64_combinations_no_overlaps_and_centered(self):
+    def test_all_128_combinations_no_overlaps_and_centered(self):
         """
-        Verifica tutte le 64 combinazioni combinatorie (2^6) di equipaggiamento.
+        Verifica tutte le 128 combinazioni combinatorie (2^7) di equipaggiamento (incluso Anello proc).
         Per ciascun caso:
-        - Nessuna coppia adiacente deve avere distanza < 28px (zero sovrapposizioni).
+        - Nessuna coppia adiacente deve avere distanza < target_w (zero sovrapposizioni).
         - La somma delle coordinate deve essere esattamente 0 (perfetta simmetria orizzontale).
         - L'ampiezza totale non deve mai superare i 264px (sotto la barra del mana).
         - L'ordine da sinistra a destra deve rispettare rigorosamente la sequenza definita.
         """
-        OPTIONAL_FLAGS = ["T1", "T2", "Cloak", "T8", "Gloves", "Boots"]
+        OPTIONAL_FLAGS = ["T1", "T2", "Ring", "Cloak", "T8", "Gloves", "Boots"]
         tested_count = 0
 
         for combo in itertools.product([True, False], repeat=len(OPTIONAL_FLAGS)):
@@ -67,6 +69,7 @@ class TestAllUtilityCases(unittest.TestCase):
             active = []
             if flags["T1"]: active.append("05 - Trinket 1")
             if flags["T2"]: active.append("06 - Trinket 2")
+            if flags["Ring"]: active.append("06b - Ring")
             if flags["Cloak"]: active.append("07 - Cloak")
             if flags["T8"]: active.append("08 - Tier 8")
             if flags["Gloves"]: active.append("09 - Gloves")
@@ -78,17 +81,18 @@ class TestAllUtilityCases(unittest.TestCase):
             tested_count += 1
             N = len(active)
             self.assertGreaterEqual(N, 3, "Il numero minimo di icone deve essere >= 3")
-            self.assertLessEqual(N, 9, "Il numero massimo di icone deve essere <= 9")
+            self.assertLessEqual(N, 10, "Il numero massimo di icone deve essere <= 10")
 
             positions, step = compute_utility_layout(active)
             coords = [positions[aid] for aid in active]
+            target_w = 26 if N >= 10 else 28
 
-            # 1. Monotonia stretta e verifica sovrapposizioni (minima distanza >= 28px)
+            # 1. Monotonia stretta e verifica sovrapposizioni (minima distanza >= target_w)
             for j in range(len(coords) - 1):
                 diff = coords[j + 1] - coords[j]
                 self.assertGreaterEqual(
-                    diff, 28,
-                    f"SOVRAPPOSIZIONE RILEVATA nel caso N={N} ({active}) tra {active[j]} ({coords[j]}) e {active[j+1]} ({coords[j+1]}): delta={diff}px < 28px"
+                    diff, target_w,
+                    f"SOVRAPPOSIZIONE RILEVATA nel caso N={N} ({active}) tra {active[j]} ({coords[j]}) e {active[j+1]} ({coords[j+1]}): delta={diff}px < {target_w}px"
                 )
 
             # 2. Perfetta simmetria centrale (somma coordinate == 0)
@@ -98,13 +102,14 @@ class TestAllUtilityCases(unittest.TestCase):
             )
 
             # 3. Ampiezza totale confinata sotto la barra del mana (<= 264px)
-            span = (max(coords) + 14) - (min(coords) - 14)
+            half_w = target_w // 2
+            span = (max(coords) + half_w) - (min(coords) - half_w)
             self.assertLessEqual(
                 span, 264,
                 f"Ampiezza eccessiva nel caso N={N} ({active}): span={span}px > 264px"
             )
 
-        self.assertEqual(tested_count, 64, "Devono essere testate esattamente 64 combinazioni")
+        self.assertEqual(tested_count, 128, "Devono essere testate esattamente 128 combinazioni")
 
     def test_static_offsets_builder_integrity(self):
         """
@@ -112,7 +117,7 @@ class TestAllUtilityCases(unittest.TestCase):
         TUTTI distinti tra loro e separati da almeno 28px, evitando collisioni di default.
         """
         auras = build_utility_auras()
-        self.assertEqual(len(auras), 9, "La riga utility deve produrre 9 aure")
+        self.assertEqual(len(auras), 10, "La riga utility deve produrre 10 aure")
 
         offsets = {}
         for a in auras:
@@ -143,14 +148,14 @@ class TestAllUtilityCases(unittest.TestCase):
 
         # Controllo che siano rigorosamente crescenti da sinistra a destra
         expected_order = [
-            "05 - Trinket 1", "06 - Trinket 2", "07 - Cloak", "08 - Tier 8",
+            "05 - Trinket 1", "06 - Trinket 2", "06b - Ring", "07 - Cloak", "08 - Tier 8",
             "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"
         ]
         ordered_x = [offsets[aid] for aid in expected_order]
         for j in range(len(ordered_x) - 1):
             diff = ordered_x[j + 1] - ordered_x[j]
             self.assertGreaterEqual(
-                diff, 28,
+                diff, 26,
                 f"Offset statici troppo vicini o invertiti tra {expected_order[j]} ({ordered_x[j]}) e {expected_order[j+1]} ({ordered_x[j+1]}): delta={diff}px"
             )
 
@@ -159,6 +164,7 @@ class TestAllUtilityCases(unittest.TestCase):
         Verifica analitica delle coordinate matematiche per ogni valore di N da 3 a 9.
         """
         expected_tables = {
+            10: [-117, -91, -65, -39, -13, 13, 39, 65, 91, 117],
             9: [-116, -87, -58, -29, 0, 29, 58, 87, 116],
             8: [-112, -80, -48, -16, 16, 48, 80, 112],
             7: [-114, -76, -38, 0, 38, 76, 114],
@@ -168,7 +174,7 @@ class TestAllUtilityCases(unittest.TestCase):
             3: [-52, 0, 52],
         }
 
-        dummy_ids = [f"Item_{i}" for i in range(9)]
+        dummy_ids = [f"Item_{i}" for i in range(10)]
         for n, expected_xs in expected_tables.items():
             pos, step = compute_utility_layout(dummy_ids[:n])
             actual_xs = [pos[aid] for aid in dummy_ids[:n]]
@@ -198,8 +204,10 @@ class TestAllUtilityCases(unittest.TestCase):
             ["08 - Tier 8", "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"],
             # Equipaggia Mantello con proc
             ["07 - Cloak", "08 - Tier 8", "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"],
-            # Equipaggia Trinket 1 e 2 (9 icone complete)
+            # Equipaggia Trinket 1 e 2 (9 icone)
             ["05 - Trinket 1", "06 - Trinket 2", "07 - Cloak", "08 - Tier 8", "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"],
+            # Equipaggia Anello proc (10 icone complete)
+            ["05 - Trinket 1", "06 - Trinket 2", "06b - Ring", "07 - Cloak", "08 - Tier 8", "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"],
             # Switch su gear senza T8 ma con guanti e stivali (8 icone)
             ["05 - Trinket 1", "06 - Trinket 2", "07 - Cloak", "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"],
             # Rimuove guanti da ingegneria (7 icone classiche con stivali)
@@ -211,10 +219,11 @@ class TestAllUtilityCases(unittest.TestCase):
         for step_idx, active_list in enumerate(history):
             pos, step = compute_utility_layout(active_list)
             xs = [pos[aid] for aid in active_list]
+            target_w = 26 if len(active_list) >= 10 else 28
             for j in range(len(xs) - 1):
                 diff = xs[j + 1] - xs[j]
                 self.assertGreaterEqual(
-                    diff, 28,
+                    diff, target_w,
                     f"Transizione #{step_idx} fallita con sovrapposizione tra {active_list[j]} e {active_list[j+1]}: diff={diff}px"
                 )
             self.assertEqual(sum(xs), 0, f"Transizione #{step_idx} ha perso la centratura")

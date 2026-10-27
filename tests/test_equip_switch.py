@@ -35,7 +35,9 @@ def get_layout(has_t8):
 
 def calculate_dynamic_positions(active_ids):
     N = len(active_ids)
-    if N >= 9:
+    if N >= 10:
+        step = 26
+    elif N == 9:
         step = 29
     elif N == 8:
         step = 32
@@ -105,7 +107,18 @@ class TestDynamicEquipSwitch(unittest.TestCase):
             "05 - Trinket 1", "06 - Trinket 2", "07 - Cloak", "08 - Tier 8",
             "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"
         ]
-        # Test con tutti i 9 attivi
+        # Test con tutti i 10 attivi (incluso Anello proc)
+        all_10 = [
+            "05 - Trinket 1", "06 - Trinket 2", "06b - Ring", "07 - Cloak", "08 - Tier 8",
+            "09 - Gloves", "10 - Mana Gem", "11 - Combustion", "12 - Mirror Image", "13 - Boots"
+        ]
+        pos10, step10 = calculate_dynamic_positions(all_10)
+        self.assertEqual(len(pos10), 10)
+        span10 = (max(pos10.values()) + 13) - (min(pos10.values()) - 13)
+        self.assertLessEqual(span10, 264)
+        self.assertEqual(sum(pos10.values()), 0) # Perfetta simmetria centrale
+
+        # Test con 9 attivi (senza anello)
         pos9, step9 = calculate_dynamic_positions(all_possible)
         self.assertEqual(len(pos9), 9)
         span9 = (max(pos9.values()) + 14) - (min(pos9.values()) - 14)
