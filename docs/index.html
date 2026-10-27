@@ -698,7 +698,7 @@
             border: 1px solid #000;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0,0,0,0.9);
-            transition: transform 0.15s ease, opacity 0.2s ease;
+            transition: transform 0.15s ease, opacity 0.2s ease, width 0.2s ease, height 0.2s ease;
             cursor: pointer;
         }
         .wa-box:hover {
@@ -1767,6 +1767,13 @@
                         <button class="btn-act" id="btnMirrorAct" onclick="useMirrorImage()">👥 Mirror Image</button>
                     </div>
 
+                    <span class="ctrl-sub-label">Equipment Proc Slots (Click to Toggle Equip/Unequip)</span>
+                    <div class="btn-grid-3">
+                        <button class="btn-act active" id="btnToggleRingEquip" onclick="toggleRingEquip()">💍 Ring: Equipped</button>
+                        <button class="btn-act active" id="btnToggleCloakEquip" onclick="toggleCloakEquip()">🪡 Cloak: Equipped</button>
+                        <button class="btn-act active" id="btnToggleGlovesEquip" onclick="toggleGlovesEquip()">🧤 Gloves: Equipped</button>
+                    </div>
+
                     <span class="ctrl-sub-label">BiS Endgame Trinkets (45s ICD) &amp; Ring (60s ICD)</span>
                     <div class="btn-grid-3">
                         <button class="btn-act" id="btnDfoAct" onclick="useTrinket1()">💎 DFO (Rotface)</button>
@@ -1941,6 +1948,10 @@
             t8Active: false,
             dfoActive: false,
             ctsActive: false,
+            ringEquipped: true,
+            cloakEquipped: true,
+            glovesEquipped: true,
+            bootsEquipped: true,
             ringActive: false,
             cloakActive: false,
             glovesActive: false,
@@ -2351,6 +2362,7 @@
             }
 
             updateProcsVisibility();
+            updateUtilityRowWidth();
             renderStats();
         }
 
@@ -2882,8 +2894,128 @@
             }, 1000);
         }
 
+        // Dynamic Utility Row Icon Sizing & Auto-Centering (26px for 10 icons, 28px for <= 9 icons)
+        function updateUtilityRowWidth() {
+            const bar = document.getElementById('utilityRowBar');
+            if (!bar) return;
+            const boxes = bar.querySelectorAll('.wa-box');
+            let visibleCount = 0;
+            boxes.forEach(b => {
+                if (b.style.display !== 'none') visibleCount++;
+            });
+            const targetSize = (visibleCount >= 10) ? '26px' : '28px';
+            boxes.forEach(b => {
+                b.style.width = targetSize;
+                b.style.height = targetSize;
+            });
+        }
+
+        // Toggle Ring Equip (Ashen Band / Frostforged Sage)
+        function updateRingVisibility() {
+            const utilRing = document.getElementById('utilRing');
+            const btnRing = document.getElementById('btnRingAct');
+            const btnToggle = document.getElementById('btnToggleRingEquip');
+            if (utilRing) {
+                utilRing.style.display = sim.ringEquipped ? 'block' : 'none';
+            }
+            if (btnRing) {
+                btnRing.classList.toggle('disabled', !sim.ringEquipped);
+                if (!sim.ringEquipped) {
+                    btnRing.textContent = '💍 Ring: Unequipped';
+                } else if (sim.ringActive) {
+                    btnRing.textContent = '💍 Ring: ACTIVE (+285)';
+                } else {
+                    btnRing.textContent = '💍 Ashen Band';
+                }
+            }
+            if (btnToggle) {
+                btnToggle.classList.toggle('active', sim.ringEquipped);
+                btnToggle.textContent = sim.ringEquipped ? '💍 Ring: Equipped' : '💍 Ring: Unequipped';
+            }
+            if (!sim.ringEquipped) {
+                sim.ringActive = false;
+                clearSimTimer('ring');
+                const swipeRing = document.getElementById('swipeRing');
+                if (swipeRing) swipeRing.classList.remove('active');
+                const tagRing = document.getElementById('tagRingTimer');
+                if (tagRing) tagRing.textContent = '';
+                const boxRing = document.getElementById('utilRing');
+                if (boxRing) boxRing.classList.remove('pixel-glow');
+            }
+            renderStats();
+            updateUtilityRowWidth();
+        }
+
+        function toggleRingEquip() {
+            sim.ringEquipped = !sim.ringEquipped;
+            updateRingVisibility();
+            spawnFCT(sim.ringEquipped ? 'Ashen Band Equipped (Proc Enabled)' : 'Ashen Band Unequipped (Slot Hidden)', sim.ringEquipped);
+        }
+
+        // Toggle Cloak Equip (Lightweave)
+        function toggleCloakEquip() {
+            sim.cloakEquipped = !sim.cloakEquipped;
+            const utilCloak = document.getElementById('utilCloak');
+            const btnCloak = document.getElementById('btnCloakAct');
+            const btnToggle = document.getElementById('btnToggleCloakEquip');
+            if (utilCloak) utilCloak.style.display = sim.cloakEquipped ? 'block' : 'none';
+            if (btnCloak) {
+                btnCloak.classList.toggle('disabled', !sim.cloakEquipped);
+                btnCloak.textContent = sim.cloakEquipped ? '🪡 Cloak (Lightweave)' : '🪡 Cloak: Unequipped';
+            }
+            if (btnToggle) {
+                btnToggle.classList.toggle('active', sim.cloakEquipped);
+                btnToggle.textContent = sim.cloakEquipped ? '🪡 Cloak: Equipped' : '🪡 Cloak: Unequipped';
+            }
+            if (!sim.cloakEquipped) {
+                sim.cloakActive = false;
+                clearSimTimer('cloak');
+                const swipe = document.getElementById('swipeCloak');
+                if (swipe) swipe.classList.remove('active');
+                const tag = document.getElementById('tagCloakTimer');
+                if (tag) tag.textContent = '';
+            }
+            renderStats();
+            updateUtilityRowWidth();
+            spawnFCT(sim.cloakEquipped ? 'Lightweave Cloak Equipped' : 'Cloak Unequipped (Slot Hidden)', sim.cloakEquipped);
+        }
+
+        // Toggle Gloves Equip (Hyperspeed Accelerators)
+        function toggleGlovesEquip() {
+            sim.glovesEquipped = !sim.glovesEquipped;
+            const utilGloves = document.getElementById('utilGloves');
+            const btnGloves = document.getElementById('btnGlovesAct');
+            const btnToggle = document.getElementById('btnToggleGlovesEquip');
+            if (utilGloves) utilGloves.style.display = sim.glovesEquipped ? 'block' : 'none';
+            if (btnGloves) {
+                btnGloves.classList.toggle('disabled', !sim.glovesEquipped);
+                btnGloves.textContent = sim.glovesEquipped ? '🧤 Gloves (Haste)' : '🧤 Gloves: Unequipped';
+            }
+            if (btnToggle) {
+                btnToggle.classList.toggle('active', sim.glovesEquipped);
+                btnToggle.textContent = sim.glovesEquipped ? '🧤 Gloves: Equipped' : '🧤 Gloves: Unequipped';
+            }
+            if (!sim.glovesEquipped) {
+                sim.glovesActive = false;
+                clearSimTimer('gloves');
+                const swipe = document.getElementById('swipeGloves');
+                if (swipe) swipe.classList.remove('active');
+                const tag = document.getElementById('tagGlovesTimer');
+                if (tag) tag.textContent = '';
+                const box = document.getElementById('utilGloves');
+                if (box) box.classList.remove('pixel-glow');
+            }
+            renderStats();
+            updateUtilityRowWidth();
+            spawnFCT(sim.glovesEquipped ? 'Hyperspeed Gloves Equipped' : 'Gloves Unequipped (Slot Hidden)', sim.glovesEquipped);
+        }
+
         // 06b - Ring: Ashen Band of Endless Destruction (Frostforged Sage: +285 SP for 10s, 60s ICD)
         function triggerRing() {
+            if (!sim.ringEquipped) {
+                spawnFCT('Ashen Band is not equipped!', false);
+                return;
+            }
             clearSimTimer('ring');
             sim.ringActive = true;
             renderStats();
@@ -2891,8 +3023,10 @@
             const tag = document.getElementById('tagRingTimer');
             const swipe = document.getElementById('swipeRing');
             const box = document.getElementById('utilRing');
+            const btnRing = document.getElementById('btnRingAct');
             if (swipe) swipe.classList.add('active');
             if (box) box.classList.add('pixel-glow');
+            if (btnRing) btnRing.textContent = '💍 Ring: ACTIVE (+285)';
 
             let rem = 60;
             if (tag) tag.textContent = '10s';
@@ -2901,12 +3035,16 @@
                 if (rem === 50) {
                     sim.ringActive = false;
                     if (box) box.classList.remove('pixel-glow');
+                    if (btnRing && sim.ringEquipped) btnRing.textContent = '💍 Ring: ' + rem + 's ICD';
                     renderStats();
+                } else if (rem < 50 && rem > 0) {
+                    if (btnRing && sim.ringEquipped) btnRing.textContent = '💍 Ring: ' + rem + 's ICD';
                 }
                 if (rem <= 0) {
                     clearSimTimer('ring');
                     if (swipe) swipe.classList.remove('active');
                     if (tag) tag.textContent = '';
+                    if (btnRing && sim.ringEquipped) btnRing.textContent = '💍 Ashen Band';
                 } else {
                     if (rem > 50) {
                         if (tag) tag.textContent = (rem - 50) + 's';
@@ -2919,6 +3057,10 @@
 
         // Trigger Cloak
         function triggerCloak() {
+            if (!sim.cloakEquipped) {
+                spawnFCT('Cloak is not equipped!', false);
+                return;
+            }
             clearSimTimer('cloak');
             sim.cloakActive = true;
             spawnFCT('+Lightweave Embroidery (+295 SP)!', false);
@@ -2936,6 +3078,10 @@
 
         // 09 - Gloves (Engineering Hyperspeed Accelerators / Slot 10: +340 Haste for 12s, 60s CD)
         function useGloves() {
+            if (!sim.glovesEquipped) {
+                spawnFCT('Engineering Gloves are not equipped!', false);
+                return;
+            }
             clearSimTimer('gloves');
             sim.glovesActive = true;
             renderStats();
