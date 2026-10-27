@@ -15,6 +15,8 @@ Progettata per garantire un'elevata fluidità in combattimento, un consumo ridot
 
 Visualizza e interagisci con l'HUD direttamente dal browser senza installare nulla:  
 👉 **[Apri il Simulatore Web su GitHub Pages](https://glacyal.github.io/fire-mage-335a-am/)**  
+- **Test Interattivo Equip/Unequip**: simula l'indossamento o la rimozione di Anello Ashen, Mantello e Guanti con contrazione/espansione automatica dell'HUD.
+- **Precision Timers & Radial Cooldown Clock**: tutti i proc e gli ICD presentano conto alla rovescia al secondo e animazione circolare clock swipe autentica.  
 
 ---
 
@@ -55,16 +57,16 @@ Posizionato nella parte superiore dell'HUD, gestisce fino a 8 icone con riposizi
 
 ### 5. Riga Utility Adattiva (`05` - `13`, da 3 a 10 Icone)
 La riga inferiore si adatta in tempo reale con centratura automatica in base all'equipaggiamento indossato:
-- **05 - Trinket 1** e **06 - Trinket 2**: Visibili solo se gli slot sono equipaggiati, con timer del recupero interno (ICD) e bordo luminoso su proc attivo.
-- **06b - Ring**: Compare solo se è equipaggiato nello slot anello un anello con proc attivo da incantatore/healer (es. *Ashen Band of Endless Destruction* o *Endless Wisdom* di ICC, oppure *Band of the Eternal Sage* di Mount Hyjal). Monitora il proc *Frostforged Sage* (+285 SP per 10s, ICD di 60s con swipe e Pixel Glow).
-- **07 - Cloak**: Compare solo se il mantello ha un incanto con proc attivo (es. *Ricamo di Luce Intessuta*).
-- **08 - Tier 8**: Compare solo equipaggiando almeno 2 pezzi del set T8, tracciando il bonus +350 Spell Power.
-- **09 - Gloves**: Compare solo se i guanti possiedono gli *Acceleratori Ipersonici* di Ingegneria.
-- **10 - Mana Gem**: Mostra le cariche effettive in borsa, il tempo di ricarica e l'attivazione del bonus 2P T7.
+- **05 - Trinket 1** e **06 - Trinket 2**: Visibili solo se gli slot sono equipaggiati, con timer del recupero interno (ICD di 45s/90s/120s o On-Use), animazione cooldown clock swipe radiale e bordo luminoso su proc attivo.
+- **06b - Ring**: Compare solo se è equipaggiato nello slot anello (slot 11 o 12) un anello con proc attivo da incantatore/healer (tutti gli anelli del *Verdetto Cinereo*: *Ashen Band of Endless Destruction* / *Wisdom*, e legacy *Band of the Eternal Sage* di Hyjal). Monitora il proc *Frostforged Sage* (+285 SP per 10s, ICD reale di 60s con countdown, clock swipe circolare e Pixel Glow).
+- **07 - Cloak**: Compare solo se il mantello possiede un incanto con proc attivo (es. *Ricamo di Luce Intessuta*, +295 SP per 15s, 45s ICD con countdown dinamico di buff e ICD, clock swipe e Pixel Glow).
+- **08 - Tier 8**: Compare solo equipaggiando almeno 2 pezzi del set T8, tracciando il bonus *Praxis* (+350 Spell Power, 15s durata, 45s ICD).
+- **09 - Gloves**: Compare solo se i guanti possiedono gli *Acceleratori Ipersonici* di Ingegneria (+340 Haste per 12s, 60s CD).
+- **10 - Mana Gem**: Mostra le cariche effettive in borsa, il tempo di ricarica e l'attivazione del bonus 2P T7 (*Mana Surge*).
 - **11 - Combustion**: Monitora stato attivo, tempo di recupero e cariche critiche residue (+10% a carica).
-- **12 - Mirror Image**: Durata delle copie, tempo di recupero e bonus 4P T10 (+18% danno).
-- **13 - Boots**: Compare solo con incanto di velocità attivo o *Acceleratori a Nitro* di Ingegneria.
-- **Centratura Automatica**: Qualsiasi combinazione di icone attive viene allineata in modo simmetrico ed equilibrato rispetto al centro.
+- **12 - Mirror Image**: Durata delle copie, tempo di recupero e bonus 4P T10 (*Quad Core*, +18% danno).
+- **13 - Boots**: Compare solo con incanto di velocità attivo o *Acceleratori a Nitro* di Ingegneria (5s sprint, 3m CD).
+- **Centratura Automatica Dinamica**: Qualsiasi combinazione di icone attive (fino a 10 icone con passo adattivo da 26px a 28px) viene allineata in modo perfettamente simmetrico ed equilibrato sotto la barra del mana senza alcun overflow ($\sum x = 0$).
 
 ### 6. Pannello Statistiche in Tempo Reale (`18 - Stats Panel`)
 Aggiorna in tempo reale i valori effettivi tenendo conto di equipaggiamento, talenti, consumabili e sinergie di raid:
@@ -106,7 +108,7 @@ Fire Mage 3.3.5a AM/
 │   │   ├── alerts.py                # 17 - Alerts (avvisi testuali centrali)
 │   │   ├── stats.py                 # 18 - Stats Panel (pannello statistiche in tempo reale)
 │   │   └── multi_lb.py              # 19 - Multi-Target Living Bomb Tracker (colonna destra fino a 5 target)
-│   └── tree.py                      # Albero complessivo del gruppo (19 nodi principali, 43 aure)
+│   └── tree.py                      # Albero complessivo del gruppo (20 nodi principali, 45 aure)
 ├── docs/
 │   └── index.html                   # Simulatore web interattivo
 ├── tests/                           # Suite di test automatici
@@ -132,7 +134,7 @@ Fire Mage 3.3.5a AM/
 
 ## 🚀 Installazione in Gioco (3 Passaggi)
 
-1. **Copia la Stringa**: Apri il file **[`IMPORT_STRING.txt`](file:///d:/0Progetti/Fire%20Mage%203.3.5a%20AM/IMPORT_STRING.txt)** e copia l'intero contenuto (`Ctrl+A`, poi `Ctrl+C`).
+1. **Copia la Stringa**: Apri il file **[`IMPORT_STRING.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING.txt)** e copia l'intero contenuto (`Ctrl+A`, poi `Ctrl+C`).
 2. **Apri WeakAuras**: In gioco, digita il comando `/wa` nella chat.
 3. **Importa**: Clicca su **Import** in alto a sinistra, incolla il testo con `Ctrl+V` e conferma l'importazione.
 
@@ -142,7 +144,7 @@ Fire Mage 3.3.5a AM/
 
 | Client / Piattaforma | Versione WeakAuras | Compatibilità | Note |
 | :--- | :--- | :---: | :--- |
-| **WotLK 3.3.5a (Build 12340)** | **WeakAuras 4.0.0** | ✅ **100% Nativa** | Sviluppata e collaudata su WeakAuras 4.0.0 (`internalVersion: 52`). Importazione rapida e priva di blocchi (~48 KB). |
+| **WotLK 3.3.5a (Build 12340)** | **WeakAuras 4.0.0** | ✅ **100% Nativa** | Sviluppata e collaudata su WeakAuras 4.0.0 (`internalVersion: 52`). Importazione rapida e priva di blocchi (~51 KB). |
 
 ---
 
