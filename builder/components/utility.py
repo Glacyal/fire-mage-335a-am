@@ -12,7 +12,7 @@ quando viene rimosso), rispettando rigorosamente la sequenza stabilita da sinist
 6. 06 - Mana Gem (Gemma del Mana, Cooldown + cariche effettive in borsa x3/x2/x1/0 + Proc T7 Mana Surge)
 7. 06 - Combustion (Combustione, stato ON, stack critici rimanenti, cooldown)
 8. 06 - Mirror Image (Copie, durata 30s + Bonus T10 4P Quad Core +18% danni)
-9. 06 - Boots (Slot 8, Attivo SOLO con incanto che dà velocità/speed: Nitro Boosts, Tuskarr's Vitality, ecc.)
+9. 06 - Boots (Slot 8, Attivo SOLO con Nitro Boosts di Ingegneria)
 
 Compatibilità: WeakAuras 4.0.0 (internalVersion: 52). Tutti i test sono stati eseguiti su questa versione.
 """
@@ -170,18 +170,12 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
     _G.FMHUD_GlovesSpellIds = { [54758] = true }
     _G.FMHUD_GlovesKeywords = { "hyperspeed", "accelerat", "ipersonic", "340 haste", "fretta di 340", "celere di 340" }
 
-    -- Feet: Enchants that give speed (Nitro Boosts, Tuskarr's Vitality, Cat's Swiftness, Greater Speed, Boar's Speed, Minor Speed)
+    -- Feet: Only Nitro Boosts (Engineering) can trigger / have on-use cooldown
     _G.FMHUD_BootsEnchantIDs = {
         [3601] = true, -- Nitro Boosts (Engineering)
-        [3784] = true, -- Tuskarr's Vitality (+15 Stam & Minor Speed Increase)
-        [3232] = true, -- Cat's Swiftness (+6 Agi & Minor Speed Increase)
-        [983]  = true, -- Greater Speed (+8% Speed Increase)
-        [2679] = true, -- Boar's Speed (+9 Stam & Minor Speed Increase)
-        [911]  = true, -- Minor Speed
-        [464]  = true, -- Minor Speed
     }
-    _G.FMHUD_BootsSpellIds = { [54861] = true }
-    _G.FMHUD_BootsKeywords = { "nitro", "boosts", "acceleratori a nitro", "speed", "velocit", "rapidit", "movimento", "swiftness", "tuskarr" }
+    _G.FMHUD_BootsSpellIds = { [54861] = true, [54858] = true, [55016] = true }
+    _G.FMHUD_BootsKeywords = { "nitro", "acceleratori a nitro" }
 
     _G.FMHUD_ArmorSlots = { 1, 3, 5, 7, 10 }
     _G.FMHUD_T8_SetIDs = {
