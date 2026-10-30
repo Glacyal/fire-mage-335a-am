@@ -170,12 +170,22 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
     _G.FMHUD_GlovesSpellIds = { [54758] = true }
     _G.FMHUD_GlovesKeywords = { "hyperspeed", "accelerat", "ipersonic", "340 haste", "fretta di 340", "celere di 340" }
 
-    -- Feet: Only Nitro Boosts (Engineering) can trigger / have on-use cooldown
+    -- Feet: Only Nitro Boosts (Engineering) can trigger / have on-use cooldown (Enchant ID 3606 in WotLK 3.3.5a)
     _G.FMHUD_BootsEnchantIDs = {
-        [3601] = true, -- Nitro Boosts (Engineering)
+        [3606] = true, -- Nitro Boosts (Engineering +24 Crit & Active Speed)
+        [3601] = true, -- Alternate tinker ID
+        [55016] = true, -- Crafting spell
+        [54861] = true, -- Buff spell
+        [55004] = true, -- Trigger spell
+        [54858] = true, -- Item tinker spell
     }
-    _G.FMHUD_BootsSpellIds = { [54861] = true, [54858] = true, [55016] = true }
-    _G.FMHUD_BootsKeywords = { "nitro", "acceleratori a nitro" }
+    _G.FMHUD_BootsSpellIds = {
+        [54861] = true,
+        [55016] = true,
+        [55004] = true,
+        [54858] = true,
+    }
+    _G.FMHUD_BootsKeywords = { "nitro", "acceleratori a nitro", "acceleratori di nitro" }
 
     _G.FMHUD_ArmorSlots = { 1, 3, 5, 7, 10 }
     _G.FMHUD_T8_SetIDs = {
@@ -235,20 +245,35 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
             if not tt then
                 tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
                 tt:SetOwner(UIParent, "ANCHOR_NONE")
+                for i = 1, 30 do
+                    if not _G["FMHUD_ScanTTTextLeft"..i] then
+                        local l = tt:CreateFontString("FMHUD_ScanTTTextLeft"..i, "ARTWORK", "GameTooltipText")
+                        local r = tt:CreateFontString("FMHUD_ScanTTTextRight"..i, "ARTWORK", "GameTooltipText")
+                        tt:AddFontStrings(l, r)
+                    end
+                end
                 _G.FMHUD_ScanTT = tt
             end
             tt:ClearLines()
             tt:SetInventoryItem("player", s)
-            for j = 1, tt:NumLines() do
+            for j = 1, (tt:NumLines() or 0) do
                 local line = _G["FMHUD_ScanTTTextLeft"..j]
                 local text = line and line:GetText()
                 if text then
                     local lt = text:lower()
-                    local ltClean = lt:gsub("[%s%p%c]", "")
                     for _, kw in ipairs(keywords) do
-                        local kwClean = kw:lower():gsub("[%s%p%c]", "")
-                        if lt:find(kw, 1, true) or ltClean:find(kwClean, 1, true) then
-                            return true
+                        if lt:find(kw, 1, true) then return true end
+                    end
+                end
+            end
+            local regions = { tt:GetRegions() }
+            for _, r in ipairs(regions) do
+                if r and r.GetObjectType and r:GetObjectType() == "FontString" and r.GetText then
+                    local text = r:GetText()
+                    if text then
+                        local lt = text:lower()
+                        for _, kw in ipairs(keywords) do
+                            if lt:find(kw, 1, true) then return true end
                         end
                     end
                 end
@@ -292,16 +317,17 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
             return false
         end
 
-        -- Slot 8 (Boots): must have speed enchant (Nitro Boosts, Tuskarr's, Cat's Swiftness, Greater Speed, or buff)
+        -- Slot 8 (Boots): must have Nitro Boosts (Engineering)
         if s == 8 then
             local buffs = _G.FMHUD_GetPlayerBuffs and _G.FMHUD_GetPlayerBuffs()
             if buffs then
-                if (_G.FMHUD_BootsSpellIds and (buffs.bySpellId[54861] or buffs.bySpellId[54858] or buffs.bySpellId[55016])) then
+                if (_G.FMHUD_BootsSpellIds and (buffs.bySpellId[54861] or buffs.bySpellId[54858] or buffs.bySpellId[55016] or buffs.bySpellId[55004])) then
                     cache.isEquipped = true
                     return true
                 end
-                for _, b in ipairs(buffs.list) do
-                    if (b.spellId and _G.FMHUD_BootsSpellIds and _G.FMHUD_BootsSpellIds[b.spellId]) or (b.name and (b.name:find("Nitro") or b.name:find("Boosts"))) then
+                for _, b in ipairs(buffs.list or {}) do
+                    local bName = b.name and b.name:lower() or ""
+                    if (b.spellId and _G.FMHUD_BootsSpellIds and _G.FMHUD_BootsSpellIds[b.spellId]) or bName:find("nitro", 1, true) then
                         cache.isEquipped = true
                         return true
                     end
@@ -310,13 +336,19 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                 for i = 1, 40 do
                     local name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", i)
                     if not name then break end
-                    if (spellId and _G.FMHUD_BootsSpellIds and _G.FMHUD_BootsSpellIds[spellId]) or (name and (name:find("Nitro") or name:find("Boosts"))) then
+                    local nLow = name:lower()
+                    if (spellId and _G.FMHUD_BootsSpellIds and _G.FMHUD_BootsSpellIds[spellId]) or nLow:find("nitro", 1, true) then
                         cache.isEquipped = true
                         return true
                     end
                 end
             end
             if enchantID and _G.FMHUD_BootsEnchantIDs and _G.FMHUD_BootsEnchantIDs[enchantID] then
+                cache.isEquipped = true
+                return true
+            end
+            local itemStart, itemDur = GetInventoryItemCooldown("player", 8)
+            if itemDur and itemDur >= 60 then
                 cache.isEquipped = true
                 return true
             end
@@ -514,8 +546,9 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                     end
                 end
             elseif slot == 8 then
-                if (spellId and (spellId == 54861 or spellId == 54858 or spellId == 55016)) or
-                   (name and (name == "Nitro Boosts" or name == "Acceleratori a Nitro" or name:find("Nitro"))) then
+                local bName = name and name:lower() or ""
+                if (spellId and (spellId == 54861 or spellId == 54858 or spellId == 55016 or spellId == 55004)) or
+                   bName:find("nitro", 1, true) then
                     isMatch = true
                 end
             else
