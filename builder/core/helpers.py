@@ -11,6 +11,7 @@ def make_subtext(
     anchor_point: str = "INNER_BOTTOM",
     font_size: int = 12,
     y_offset: int = 0,
+    x_offset: int = 0,
     extra_props: dict = None
 ) -> dict:
     """
@@ -21,6 +22,7 @@ def make_subtext(
     :param anchor_point: Punto di ancoraggio relativo alla regione padre.
     :param font_size: Dimensione del font in punti.
     :param y_offset: Spostamento verticale in pixel.
+    :param x_offset: Spostamento orizzontale in pixel.
     :param extra_props: Proprietà addizionali opzionali da fondere nel dizionario.
     :return: Dizionario formattato per la subRegion di WeakAuras.
     """
@@ -44,6 +46,10 @@ def make_subtext(
     }
     if y_offset != 0:
         res["text_yOffset"] = y_offset
+        res["anchorYOffset"] = y_offset
+    if x_offset != 0:
+        res["text_xOffset"] = x_offset
+        res["anchorXOffset"] = x_offset
     if extra_props:
         res.update(extra_props)
     return res

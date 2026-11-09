@@ -70,14 +70,13 @@ def build_bars_auras() -> list[dict]:
                 }
             ],
             "subRegions": [
-                {"type": "subbackground"},
-                {"type": "subforeground"},
                 make_subtext(
                     "%1.percentpower%%",
                     justify="CENTER",
                     anchor_point="CENTER",
                     font_size=10,
                     extra_props={
+                        "text_selfPoint": "CENTER",
                         "text_text_format_1.percentpower_format": "Number",
                         "text_text_format_1.percentpower_decimal_precision": 2,
                     }
@@ -118,25 +117,27 @@ def build_bars_auras() -> list[dict]:
                 "activeTriggerMode": -10,
             },
             "subRegions": [
-                {"type": "subbackground"},
-                {"type": "subforeground"},
-                make_subtext(
-                    "%p",
-                    justify="RIGHT",
-                    anchor_point="INNER_RIGHT",
-                    font_size=11,
-                    extra_props={
-                        "anchorXOffset": -6,
-                        "text_text_format_p_format": "timed",
-                        "text_text_format_p_time_precision": 1,
-                    }
-                ),
                 make_subtext(
                     "%n",
                     justify="LEFT",
                     anchor_point="INNER_LEFT",
                     font_size=11,
-                    extra_props={"anchorXOffset": 6}
+                    x_offset=6,
+                    extra_props={
+                        "text_selfPoint": "AUTO",
+                    }
+                ),
+                make_subtext(
+                    "%p",
+                    justify="RIGHT",
+                    anchor_point="INNER_RIGHT",
+                    font_size=11,
+                    x_offset=-6,
+                    extra_props={
+                        "text_selfPoint": "AUTO",
+                        "text_text_format_p_format": "timed",
+                        "text_text_format_p_time_precision": 1,
+                    }
                 ),
             ],
         },

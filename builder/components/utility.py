@@ -1723,7 +1723,10 @@ def make_managem_custom_text() -> str:
     end
 
     if aura_env and aura_env.region and aura_env.region.subRegions then
-        local timerSub = aura_env.region.subRegions[2]
+        local timerSub = aura_env.region.subRegions[1]
+        if not (timerSub and timerSub.text) then
+            timerSub = aura_env.region.subRegions[2]
+        end
         if timerSub and timerSub.text and timerSub.text.SetTextColor then
             if state == "ACTIVE" then
                 timerSub.text:SetTextColor(1, 0.9, 0.1, 1)
@@ -2070,6 +2073,7 @@ end"""
                         "type": "custom",
                         "custom_type": "status",
                         "check": "update",
+                        "events": "SPELL_UPDATE_COOLDOWN,BAG_UPDATE_COOLDOWN,ACTIONBAR_UPDATE_COOLDOWN,BAG_UPDATE,UNIT_INVENTORY_CHANGED,PLAYER_ENTERING_WORLD,UNIT_AURA,FMHUD_ROW_UPDATE",
                         "custom": """function(event, ...)
     if not _G.FMHUD_CoreInitDone and _G.FMHUD_InitCore then _G.FMHUD_InitCore() end
     return true
@@ -2086,7 +2090,6 @@ end"""
                 "activeTriggerMode": -10,
             },
             "subRegions": [
-                {"type": "subbackground"},
                 make_subtext(
                     "%p",
                     justify="CENTER",
@@ -2104,10 +2107,8 @@ end"""
                     justify="RIGHT",
                     anchor_point="INNER_TOPRIGHT",
                     font_size=9,
-                    extra_props={
-                        "anchorXOffset": -1,
-                        "anchorYOffset": -1,
-                    }
+                    x_offset=-1,
+                    y_offset=-1,
                 ),
             ],
         },

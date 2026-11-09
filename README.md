@@ -1,7 +1,7 @@
 # Class Mage (TTW Fire) — WeakAuras Suite
 
 [![WoW Version](https://img.shields.io/badge/World%20of%20Warcraft-3.3.5a%20(12340)-orange.svg)](https://github.com/Glacyal/fire-mage-335a-am)
-[![WeakAuras](https://img.shields.io/badge/WeakAuras-5.21.8+%20%2F%204.0.0-blue.svg)](https://github.com/Glacyal/fire-mage-335a-am)
+[![WeakAuras](https://img.shields.io/badge/WeakAuras-5.21.8+-blue.svg)](https://github.com/Glacyal/fire-mage-335a-am)
 [![Class](https://img.shields.io/badge/Class-Mage%20(Fire%20TTW)-red.svg)](https://github.com/Glacyal/fire-mage-335a-am)
 [![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://glacyal.github.io/fire-mage-335a-am/)
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-gray.svg?logo=paypal&logoColor=white&labelColor=0079c1)](https://www.paypal.me/AMantmar)
@@ -127,8 +127,7 @@ Fire Mage 3.3.5a AM/
 │   ├── test_string_sync.py          # Verifica corrispondenza tra builder e le stringhe WA
 │   └── test_tree_layout.py          # Verifica gerarchia e ordinamento dell'albero
 ├── generate.py                      # Script di compilazione della stringa WeakAuras 5.21.8+
-├── IMPORT_STRING_5.21.8.txt         # Stringa WeakAuras 5.21.8+ nativa (Zero Warning, internalVersion: 90)
-├── IMPORT_STRING.txt                # Stringa WeakAuras 4.0.0 legacy (CONGELATA permanentemente)
+├── IMPORT_STRING_v5.21.8.txt        # Stringa WeakAuras 5.21.8+ nativa (Zero Warning, internalVersion: 90)
 └── scripts/
     └── sync_docs.py                 # Sincronizzazione automatica della stringa v5 in docs/index.html
 ```
@@ -137,9 +136,8 @@ Fire Mage 3.3.5a AM/
 
 ## 🚀 Installazione in Gioco (3 Passaggi)
 
-1. **Scegli la Stringa Corretta**:
-   - **WeakAuras 5.21.8+ (Consigliata per client moderni)**: Apri **[`IMPORT_STRING_5.21.8.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING_5.21.8.txt)** (0 warning, 0 triangolini gialli, nativa `internalVersion: 90`).
-   - **WeakAuras 4.0.0 (Legacy)**: Apri **[`IMPORT_STRING.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING.txt)** (versione congelata per client classici).
+1. **Copia la Stringa di Importazione**:
+   - Apri **[`IMPORT_STRING_v5.21.8.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING_v5.21.8.txt)** (0 warning, 0 triangolini gialli, nativa `internalVersion: 90`).
    - Copia l'intero contenuto (`Ctrl+A`, poi `Ctrl+C`).
 2. **Apri WeakAuras**: In gioco, digita il comando `/wa` nella chat.
 3. **Importa**: Clicca su **Import** in alto a sinistra, incolla il testo con `Ctrl+V` e conferma l'importazione.
@@ -150,8 +148,7 @@ Fire Mage 3.3.5a AM/
 
 | Client / Piattaforma | Versione WeakAuras | File Stringa | Compatibilità | Note |
 | :--- | :--- | :--- | :---: | :--- |
-| **WotLK 3.3.5a (Build 12340)** | **WeakAuras 5.21.8+** | `IMPORT_STRING_5.21.8.txt` | 🏆 **100% Nativa (0 Warning)** | Ottimizzata per motore WA5: usa `WeakAuras.GetRegion(id)`, sandbox protetto con `rawset`, zero chiamate a `GetData`, filtri CLEU selettivi, `internalVersion: 90`. Zero triangolini e zero warning chat. |
-| **WotLK 3.3.5a (Build 12340)** | **WeakAuras 4.0.0** | `IMPORT_STRING.txt` | ❄️ **100% Congelata** | Baseline di riferimento per WeakAuras 4.0.0. Non viene mai modificata da script futuri. |
+| **WotLK 3.3.5a (Build 12340)** | **WeakAuras 5.21.8+** | `IMPORT_STRING_v5.21.8.txt` | 🏆 **100% Nativa (0 Warning)** | Ottimizzata per motore WA5: usa `WeakAuras.GetRegion(id)`, sandbox protetto con `rawset`, zero chiamate a `GetData`, filtri CLEU selettivi, `internalVersion: 90`. Zero triangolini e zero warning chat. |
 
 ---
 
