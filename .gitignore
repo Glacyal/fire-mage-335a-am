@@ -26,3 +26,6 @@ _agent/
 GEMINI.md
 AGENTS.md
 *OLD.txt
+
+# DOCS - Contesto, memoria, tasks, architetture (esclusi dal controllo versione git)
+docs/*.md
