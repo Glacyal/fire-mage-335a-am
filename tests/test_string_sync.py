@@ -3,10 +3,11 @@ Test di Sincronizzazione Stringhe di Importazione WeakAuras
 ==========================================================
 Verifica la sincronizzazione e l'integrità di entrambe le stringhe:
 1. 'IMPORT_STRING.txt': Congelata permanentemente per WeakAuras 4.0.0.
-   Verifica che sia identica al backup certificato 'IMPORT_STRING_v4.0.0.txt'.
+   Verifica l'integrità tramite checksum crittografico SHA-256 e dimensione esatta.
 2. 'IMPORT_STRING_5.21.8.txt': Versione nativa WeakAuras 5.21.8+ (internalVersion 90).
    Verifica che corrisponda esattamente all'output di 'build_wa_tree("5.21.8")'.
 """
+import hashlib
 import os
 import sys
 import unittest
@@ -18,27 +19,31 @@ if ROOT_DIR not in sys.path:
 from builder.core import generate_wa_string
 from builder.tree import build_wa_tree
 
+# Checksum SHA-256 certificato della stringa congelata per WeakAuras 4.0.0
+FROZEN_LEGACY_SHA256 = "cc4527748d832cfd81500f22a194461c28c14cfed977f0840ee7ce01d998b4cf"
+FROZEN_LEGACY_LENGTH = 52122
+
 
 class TestStringSync(unittest.TestCase):
 
     def test_frozen_legacy_string_integrity(self):
-        """Verifica che IMPORT_STRING.txt sia intatta e identica al backup congelato v4.0.0."""
+        """Verifica che IMPORT_STRING.txt sia intatta e non alterata per WeakAuras 4.0.0."""
         legacy_path = os.path.join(ROOT_DIR, "IMPORT_STRING.txt")
-        backup_path = os.path.join(ROOT_DIR, "IMPORT_STRING_v4.0.0.txt")
-
         self.assertTrue(os.path.exists(legacy_path), "IMPORT_STRING.txt deve esistere")
-        self.assertTrue(os.path.exists(backup_path), "IMPORT_STRING_v4.0.0.txt deve esistere come garanzia di backup")
 
         with open(legacy_path, "r", encoding="utf-8") as f:
             legacy_content = f.read().strip()
 
-        with open(backup_path, "r", encoding="utf-8") as f:
-            backup_content = f.read().strip()
-
+        actual_sha256 = hashlib.sha256(legacy_content.encode("utf-8")).hexdigest()
         self.assertEqual(
-            legacy_content,
-            backup_content,
-            "VIOLAZIONE CONTRATTO: 'IMPORT_STRING.txt' è stata alterata rispetto alla versione congelata 4.0.0!"
+            actual_sha256,
+            FROZEN_LEGACY_SHA256,
+            "VIOLAZIONE CONTRATTO: 'IMPORT_STRING.txt' è stata alterata rispetto alla baseline congelata per WeakAuras 4.0.0!"
+        )
+        self.assertEqual(
+            len(legacy_content),
+            FROZEN_LEGACY_LENGTH,
+            f"Dimensione errata per IMPORT_STRING.txt: attesi {FROZEN_LEGACY_LENGTH}, trovati {len(legacy_content)}"
         )
         self.assertTrue(legacy_content.startswith("!WA:1!"), "La stringa legacy deve iniziare con !WA:1!")
 

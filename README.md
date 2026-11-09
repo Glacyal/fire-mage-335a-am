@@ -129,7 +129,6 @@ Fire Mage 3.3.5a AM/
 ├── generate.py                      # Script di compilazione della stringa WeakAuras 5.21.8+
 ├── IMPORT_STRING_5.21.8.txt         # Stringa WeakAuras 5.21.8+ nativa (Zero Warning, internalVersion: 90)
 ├── IMPORT_STRING.txt                # Stringa WeakAuras 4.0.0 legacy (CONGELATA permanentemente)
-├── IMPORT_STRING_v4.0.0.txt         # Backup certificato v4.0.0
 └── scripts/
     └── sync_docs.py                 # Sincronizzazione automatica della stringa v5 in docs/index.html
 ```
