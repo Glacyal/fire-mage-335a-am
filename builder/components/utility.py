@@ -1239,13 +1239,6 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                     r:SetHeight(targetW)
                 end
             end
-            if WeakAuras and WeakAuras.GetData then
-                local data = WeakAuras.GetData(id)
-                if data and (data.xOffset ~= targetX or data.yOffset ~= -45) then
-                    data.xOffset = targetX
-                    data.yOffset = -45
-                end
-            end
         end
     end
 
