@@ -30,6 +30,8 @@ def make_subtext(
         "type": "subtext",
         "text_text": text,
         "text_justify": justify,
+        "anchor_point": anchor_point,
+        "anchorPoint": anchor_point,
         "text_anchorPoint": anchor_point,
         "text_fontSize": font_size,
         "text_font": "Expressway",
@@ -43,13 +45,13 @@ def make_subtext(
         "text_text_format_p_time_precision": 1,
         "text_text_format_p_time_dynamic_threshold": 60,
         "text_visible": True,
+        "anchorXOffset": x_offset,
+        "anchorYOffset": y_offset,
+        "text_anchorXOffset": x_offset,
+        "text_anchorYOffset": y_offset,
+        "text_xOffset": x_offset,
+        "text_yOffset": y_offset,
     }
-    if y_offset != 0:
-        res["text_yOffset"] = y_offset
-        res["anchorYOffset"] = y_offset
-    if x_offset != 0:
-        res["text_xOffset"] = x_offset
-        res["anchorXOffset"] = x_offset
     if extra_props:
         res.update(extra_props)
     return res

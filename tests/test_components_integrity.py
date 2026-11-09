@@ -166,6 +166,60 @@ class TestComponentsIntegrity(unittest.TestCase):
         self.assertIn("35.0", custom_code)
         self.assertIn("35.0", untrigger_code)
 
+    def test_subtext_anchor_point_dual_keys_and_offsets(self):
+        """Verifica che tutte le subRegion di tipo subtext abbiano le chiavi anchor_point, anchorPoint, text_anchorPoint e offset."""
+        tree = build_wa_tree()
+        all_d = [tree["d"]] + tree["c"]
+        subtext_count = 0
+        for aura in all_d:
+            subregions = aura.get("subRegions", [])
+            for sub in subregions:
+                if sub.get("type") == "subtext":
+                    subtext_count += 1
+                    self.assertIn("anchor_point", sub, f"anchor_point mancante nell'aura {aura.get('id')}")
+                    self.assertIn("anchorPoint", sub, f"anchorPoint mancante nell'aura {aura.get('id')}")
+                    self.assertIn("text_anchorPoint", sub, f"text_anchorPoint mancante nell'aura {aura.get('id')}")
+                    self.assertEqual(sub["anchor_point"], sub["anchorPoint"])
+                    self.assertEqual(sub["anchor_point"], sub["text_anchorPoint"])
+                    self.assertIn("anchorXOffset", sub)
+                    self.assertIn("anchorYOffset", sub)
+                    self.assertIn("text_anchorXOffset", sub)
+                    self.assertIn("text_anchorYOffset", sub)
+        self.assertGreater(subtext_count, 15, "Numero insufficiente di subtext rilevati")
+
+    def test_specific_bars_and_gem_text_anchors(self):
+        """Verifica che 14 - Mana Bar, 16 - Castbar e 10 - Mana Gem abbiano gli ancoraggi conformi alle richieste visive."""
+        tree = build_wa_tree()
+        all_d = {a.get("id"): a for a in [tree["d"]] + tree["c"]}
+        
+        # 14 - Mana Bar: centrato
+        mana_bar = all_d.get("14 - Mana Bar")
+        self.assertIsNotNone(mana_bar)
+        mana_subtexts = [s for s in mana_bar.get("subRegions", []) if s.get("type") == "subtext"]
+        self.assertEqual(len(mana_subtexts), 1)
+        self.assertEqual(mana_subtexts[0]["anchor_point"], "CENTER")
+        self.assertEqual(mana_subtexts[0]["text_justify"], "CENTER")
+
+        # 16 - Castbar: nome a sinistra, tempo a destra
+        castbar = all_d.get("16 - Castbar")
+        self.assertIsNotNone(castbar)
+        cast_subtexts = [s for s in castbar.get("subRegions", []) if s.get("type") == "subtext"]
+        self.assertEqual(len(cast_subtexts), 2)
+        self.assertEqual(cast_subtexts[0]["text_text"], "%n")
+        self.assertEqual(cast_subtexts[0]["anchor_point"], "INNER_LEFT")
+        self.assertEqual(cast_subtexts[1]["text_text"], "%p")
+        self.assertEqual(cast_subtexts[1]["anchor_point"], "INNER_RIGHT")
+
+        # 10 - Mana Gem: timer su INNER_BOTTOM e cariche su INNER_TOPRIGHT
+        mana_gem = all_d.get("10 - Mana Gem")
+        self.assertIsNotNone(mana_gem)
+        gem_subtexts = [s for s in mana_gem.get("subRegions", []) if s.get("type") == "subtext"]
+        self.assertEqual(len(gem_subtexts), 2)
+        self.assertEqual(gem_subtexts[0]["text_text"], "%p")
+        self.assertEqual(gem_subtexts[0]["anchor_point"], "INNER_BOTTOM")
+        self.assertEqual(gem_subtexts[1]["text_text"], "%c")
+        self.assertEqual(gem_subtexts[1]["anchor_point"], "INNER_TOPRIGHT")
+
 
 if __name__ == "__main__":
     unittest.main()

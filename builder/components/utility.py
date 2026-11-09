@@ -1723,9 +1723,12 @@ def make_managem_custom_text() -> str:
     end
 
     if aura_env and aura_env.region and aura_env.region.subRegions then
-        local timerSub = aura_env.region.subRegions[1]
-        if not (timerSub and timerSub.text) then
-            timerSub = aura_env.region.subRegions[2]
+        local timerSub = nil
+        for _, sub in ipairs(aura_env.region.subRegions) do
+            if sub.type == "subtext" and sub.text and sub.text.SetTextColor then
+                timerSub = sub
+                break
+            end
         end
         if timerSub and timerSub.text and timerSub.text.SetTextColor then
             if state == "ACTIVE" then
@@ -2090,11 +2093,12 @@ end"""
                 "activeTriggerMode": -10,
             },
             "subRegions": [
+                {"type": "subbackground"},
                 make_subtext(
                     "%p",
                     justify="CENTER",
                     anchor_point="INNER_BOTTOM",
-                    font_size=10,
+                    font_size=12,
                     y_offset=1,
                     extra_props={
                         "text_text_format_p_format": "timed",
@@ -2106,7 +2110,7 @@ end"""
                     "%c",
                     justify="RIGHT",
                     anchor_point="INNER_TOPRIGHT",
-                    font_size=9,
+                    font_size=10,
                     x_offset=-1,
                     y_offset=-1,
                 ),

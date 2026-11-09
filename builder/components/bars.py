@@ -70,6 +70,8 @@ def build_bars_auras() -> list[dict]:
                 }
             ],
             "subRegions": [
+                {"type": "subbackground"},
+                {"type": "subforeground"},
                 make_subtext(
                     "%1.percentpower%%",
                     justify="CENTER",
@@ -117,6 +119,8 @@ def build_bars_auras() -> list[dict]:
                 "activeTriggerMode": -10,
             },
             "subRegions": [
+                {"type": "subbackground"},
+                {"type": "subforeground"},
                 make_subtext(
                     "%n",
                     justify="LEFT",

@@ -173,6 +173,18 @@ Per apportare modifiche alla suite o estendere la logica:
 - **Nessun CLEU Grezzo nei Trigger**: I 5 tracker ascoltano unicamente `FMHUD_LB_UPDATE`, azzerando gli errori di WeakAuras 5.
 - **Ordinamento Intelligente per Scadenza**: La bomba con minor tempo residuo occupa sempre la posizione #1 in alto, con timer rosso sotto i 3 secondi.
 
+### 4.6 Architettura SubRegions & Dual-Key Text Anchoring
+- **Root Cause & Compatibilità WeakAuras 5.21.8+ (internalVersion >= 80)**:
+  - In WeakAuras 5.x (`SubRegionTypes/SubText.lua`), l'ancoraggio nativo dei subtext legge rigorosamente il campo `anchor_point` (con underscore).
+  - La routine di migrazione `Modernize.lua` (`internalVersion < 80`) convertiva `text_anchorPoint -> anchor_point`. Tuttavia, con auras native compilate a `internalVersion: 90`, tale conversione non scatta.
+  - Se `anchor_point` non è specificato, WeakAuras applica il fallback per `aurabar` (`parentType == "aurabar" and "INNER_RIGHT"`), provocando il collasso di tutti i testi sul lato destro della barra.
+- **Soluzione Universale Dual-Key (`builder/core/helpers.py`)**:
+  - Il factory `make_subtext` emette contemporaneamente sia le chiavi moderne che quelle legacy:
+    - `anchor_point`, `anchorPoint`, `text_anchorPoint`
+    - `anchorXOffset`, `text_anchorXOffset`, `text_xOffset`
+    - `anchorYOffset`, `text_anchorYOffset`, `text_yOffset`
+  - Garantita la perfetta centratura di `%1.percentpower%%` in `14 - Mana Bar`, il doppio allineamento `%n` (`INNER_LEFT`) / `%p` (`INNER_RIGHT`) in `16 - Castbar`, e la disposizione su due livelli di `10 - Mana Gem` (`%c` su `INNER_TOPRIGHT` e `%p` su `INNER_BOTTOM`).
+
 ---
 
 ## 5. Matrice di Compatibilità Addon & API
