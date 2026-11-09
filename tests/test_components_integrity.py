@@ -5,7 +5,7 @@ Verifica la conformità di tutti i 7 moduli in builder/components/:
 - Correttezza delle strutture dati e assenza di campi mancanti
 - Unicità assoluta di tutti gli ID e UID
 - Integrità referenziale tra controlledChildren e nodi figli
-- Conformità con WeakAuras 4.0.0 (internalVersion 52)
+- Conformità con WeakAuras 4.0.0
 """
 import os
 import sys

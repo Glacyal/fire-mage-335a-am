@@ -2,7 +2,7 @@
 Test di Sincronizzazione Stringhe di Importazione WeakAuras
 ==========================================================
 Verifica la sincronizzazione e l'integrità di entrambe le stringhe:
-1. 'IMPORT_STRING.txt': Congelata permanentemente per WeakAuras 4.0.0 (internalVersion 52).
+1. 'IMPORT_STRING.txt': Congelata permanentemente per WeakAuras 4.0.0.
    Verifica che sia identica al backup certificato 'IMPORT_STRING_v4.0.0.txt'.
 2. 'IMPORT_STRING_5.21.8.txt': Versione nativa WeakAuras 5.21.8+ (internalVersion 90).
    Verifica che corrisponda esattamente all'output di 'build_wa_tree("5.21.8")'.

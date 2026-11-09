@@ -14,7 +14,7 @@ quando viene rimosso), rispettando rigorosamente la sequenza stabilita da sinist
 8. 06 - Mirror Image (Copie, durata 30s + Bonus T10 4P Quad Core +18% danni)
 9. 06 - Boots (Slot 8, Attivo SOLO con Nitro Boosts di Ingegneria)
 
-Compatibilità: WeakAuras 4.0.0 (internalVersion: 52). Tutti i test sono stati eseguiti su questa versione.
+Compatibilità: WeakAuras 4.0.0. Tutti i test sono stati eseguiti su questa versione.
 """
 from builder.core.helpers import make_subtext
 

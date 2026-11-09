@@ -13,7 +13,7 @@ Include un simulatore web interattivo per la visualizzazione immediata del layou
 | :--- | :--- |
 | **Piattaforma Target** | World of Warcraft 3.3.5a (WotLK Build 12340) |
 | **Engine WeakAuras Principale** | **WeakAuras 5.21.8+** (`internalVersion = 90`, `w = "5.21.8"`, Zero Warning nativa). |
-| **Engine WeakAuras Legacy** | **WeakAuras 4.0.0** (`internalVersion = 52`, `w = "4.0.0"`, permanentemente congelata). |
+| **Engine WeakAuras Legacy** | **WeakAuras 4.0.0** (`w = "4.0.0"`, permanentemente congelata). |
 | **File di Distribuzione Nativo v5**| [`IMPORT_STRING_5.21.8.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING_5.21.8.txt) (target attivo per tutte le future release) |
 | **File di Distribuzione Legacy v4**| [`IMPORT_STRING.txt`](file:///d:/0Progetti/fire-mage-335a-am/IMPORT_STRING.txt) (congelato, con backup identico `IMPORT_STRING_v4.0.0.txt`) |
 | **Simulatore Web** | [`docs/index.html`](file:///d:/0Progetti/fire-mage-335a-am/docs/index.html) |
@@ -28,7 +28,7 @@ Include un simulatore web interattivo per la visualizzazione immediata del layou
 ```text
 fire-mage-335a-am/
 ├── IMPORT_STRING_5.21.8.txt         # Stringa WeakAuras 5.21.8+ nativa (Zero warning, internalVersion: 90)
-├── IMPORT_STRING.txt                # Stringa WeakAuras 4.0.0 legacy (CONGELATA permanentemente, internalVersion: 52)
+├── IMPORT_STRING.txt                # Stringa WeakAuras 4.0.0 legacy (CONGELATA permanentemente)
 ├── IMPORT_STRING_v4.0.0.txt         # Backup certificato congelato v4.0.0
 ├── generate.py                      # Compilatore Python dell'albero WA (compila v5 e salvaguarda v4)
 ├── README.md                        # Documentazione utente, guida installazione e compatibilità
@@ -184,5 +184,5 @@ Per apportare modifiche alla suite o estendere la logica:
 | Client / Addon | Compatibilità | Note Tecniche |
 | :--- | :---: | :--- |
 | **WeakAuras 5.21.8+ (WotLK 3.3.5a)** | 🏆 **100% Nativa (0 Warning)** | `internalVersion: 90`, `w: "5.21.8"`, `WeakAuras.GetRegion(id)`, sandbox `rawset`, zero `GetData` a runtime, filtri CLEU selettivi. File: `IMPORT_STRING_5.21.8.txt`. |
-| **WeakAuras 4.0.0 (WotLK 3.3.5a)** | ❄️ **100% Congelata** | `internalVersion: 52`, `w: "4.0.0"`. File: `IMPORT_STRING.txt` (garantito immutabile da `IMPORT_STRING_v4.0.0.txt`). |
+| **WeakAuras 4.0.0 (WotLK 3.3.5a)** | ❄️ **100% Congelata** | `w: "4.0.0"`. File: `IMPORT_STRING.txt` (garantito immutabile da `IMPORT_STRING_v4.0.0.txt`). |
 | **Client Retail / Moderni** | ❌ **Non Supportato** | Specifico per World of Warcraft 3.3.5a (WotLK Build 12340). |

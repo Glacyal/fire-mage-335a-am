@@ -2,7 +2,7 @@
 Helper & Factory per SubRegions WeakAuras (Testi, Glow, Bordi)
 =============================================================
 Fornisce funzioni di utilità per costruire sub-regioni conformi alle specifiche
-di WeakAuras 4.0.0 (internalVersion 52) per WotLK 3.3.5a.
+di WeakAuras 4.0.0 per WotLK 3.3.5a.
 """
 
 def make_subtext(

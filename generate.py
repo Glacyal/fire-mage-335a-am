@@ -2,7 +2,7 @@
 WeakAuras String Generator
 =========================
 Genera la stringa di importazione WeakAuras per la versione nativa WeakAuras 5.21.8+.
-NOTA BENE: 'IMPORT_STRING.txt' è congelato permanentemente per WeakAuras 4.0.0 (internalVersion 52)
+NOTA BENE: 'IMPORT_STRING.txt' è congelato permanentemente per WeakAuras 4.0.0
 e NON viene mai modificato da questo script.
 """
 import os
@@ -13,7 +13,7 @@ FROZEN_LEGACY_FILE = "IMPORT_STRING.txt"
 TARGET_V5_FILE = "IMPORT_STRING_5.21.8.txt"
 
 if __name__ == "__main__":
-    print(f"[STATUS] '{FROZEN_LEGACY_FILE}' e' CONGELATO permanentemente per WeakAuras 4.0.0 (internalVersion 52).")
+    print(f"[STATUS] '{FROZEN_LEGACY_FILE}' e' CONGELATO permanentemente per WeakAuras 4.0.0.")
     print(f"[BUILD] Generazione di '{TARGET_V5_FILE}' per WeakAuras 5.21.8+ (internalVersion 90)...")
 
     wa_tree = build_wa_tree(target_version="5.21.8")
