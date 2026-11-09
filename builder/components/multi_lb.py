@@ -358,7 +358,7 @@ def build_multi_lb_auras() -> list[dict]:
                         "type": "custom",
                         "custom_type": "status",
                         "check": "event",
-                        "events": "FMHUD_LB_UPDATE,PLAYER_ENTERING_WORLD,UNIT_AURA,COMBAT_LOG_EVENT_UNFILTERED,PLAYER_TARGET_CHANGED,PLAYER_FOCUS_CHANGED,PLAYER_REGEN_ENABLED,UNIT_SPELLCAST_SUCCEEDED",
+                        "events": "FMHUD_LB_UPDATE,PLAYER_ENTERING_WORLD,UNIT_AURA,PLAYER_TARGET_CHANGED,PLAYER_FOCUS_CHANGED,PLAYER_REGEN_ENABLED,UNIT_SPELLCAST_SUCCEEDED",
                         "custom": make_lb_trigger_custom(i),
                         "customDuration": make_lb_trigger_duration(i),
                         "customIcon": """function()

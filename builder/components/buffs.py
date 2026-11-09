@@ -69,7 +69,7 @@ SHARED_FM_CHECK_LUA = """function(event, ...)
             state.targetGUID = UnitGUID("target")
             state.expires = now + 1800
         end
-    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" or event == "CLEU" then
         local _, subEvent, sourceGUID, _, _, destGUID, destName, _, spellId, spellName = ...
         local isRelevant = false
         if sourceGUID == playerGUID and (spellId == 54646 or spellName == "Focus Magic" or spellName == "Focalizzazione Magica") then
@@ -749,7 +749,7 @@ end""",
                         "type": "custom",
                         "custom_type": "status",
                         "check": "event",
-                        "events": "COMBAT_LOG_EVENT_UNFILTERED,UNIT_SPELLCAST_SUCCEEDED,UNIT_AURA,PLAYER_TARGET_CHANGED,PLAYER_FOCUS_CHANGED,RAID_ROSTER_UPDATE,PARTY_MEMBERS_CHANGED,PLAYER_ENTERING_WORLD",
+                        "events": "CLEU:SPELL_AURA_APPLIED:SPELL_AURA_REFRESH:SPELL_AURA_REMOVED:SPELL_AURA_BROKEN:UNIT_DIED,UNIT_SPELLCAST_SUCCEEDED,UNIT_AURA,PLAYER_TARGET_CHANGED,PLAYER_FOCUS_CHANGED,RAID_ROSTER_UPDATE,PARTY_MEMBERS_CHANGED,PLAYER_ENTERING_WORLD",
                         "custom": make_fm_off_trigger(),
                     },
                     "untrigger": {
