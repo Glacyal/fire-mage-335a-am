@@ -18,28 +18,25 @@ from builder.components import (
 )
 
 
-def build_wa_tree() -> dict:
+def build_wa_tree(target_version: str = "5.21.8") -> dict:
     """
-    Costruisce e restituisce l'albero gerarchico completo delle 43 aure per WeakAuras 4.0.0 (internalVersion 52).
-    Assembla modularmente gli 8 componenti:
-    1. Procs (Dynamic Group)
-    2. Buffs (Molten Armor, Arcane Intellect, Focus Magic)
-    3. Utility Row (Trinket 1, Trinket 2, Cloak, Tier 8, Gloves, Mana Gem, Combustion, Mirror Image, Boots)
-    4. Bars (Mana Bar, Castbar)
-    5. Hot Streak Bar (Background, Segment 1, Proc)
-    6. Alerts (Hot Streak Alert)
-    7. Stats Panel (Background, Text)
-    8. Multi-Target Living Bomb (Dynamic Group, 5 Tracker)
+    Costruisce e restituisce l'albero gerarchico completo delle 45 aure.
+    Supporta:
+    - target_version='5.21.8': WeakAuras 5.21.8+ nativo (internalVersion 90) [PREDETERMINATO]
+    - target_version='4.0.0': WeakAuras 4.0.0 legacy (internalVersion 52)
     """
+    internal_ver = 90 if target_version == "5.21.8" else 52
+    w_ver = "5.21.8" if target_version == "5.21.8" else "4.0.0"
+
     data = {
         "m": "d",
         "v": 2000,
-        "w": "4.0.0",
+        "w": w_ver,
         "d": {
             "id": "Class Mage (TTW Fire)",
             "uid": "FMHUD_ROOT",
             "regionType": "group",
-            "internalVersion": 52,
+            "internalVersion": internal_ver,
             "scale": 1.2,
             "xOffset": 0,
             "yOffset": -190,
@@ -85,8 +82,9 @@ def build_wa_tree() -> dict:
     data["c"].extend(build_stats_auras())
     data["c"].extend(build_multi_lb_auras())
 
-    # Applicazione uniforme delle condizioni di caricamento (Mage + Living Bomb)
+    # Applicazione uniforme delle condizioni di caricamento e versione interna
     for item in data["c"]:
         item["load"] = copy.deepcopy(FIRE_MAGE_LOAD)
+        item["internalVersion"] = internal_ver
 
     return data

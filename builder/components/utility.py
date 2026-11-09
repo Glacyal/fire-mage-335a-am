@@ -252,7 +252,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                         tt:AddFontStrings(l, r)
                     end
                 end
-                _G.FMHUD_ScanTT = tt
+                rawset(_G, "FMHUD_ScanTT", tt)
             end
             tt:ClearLines()
             tt:SetInventoryItem("player", s)
@@ -669,7 +669,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not tt then
             tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
             tt:SetOwner(UIParent, "ANCHOR_NONE")
-            _G.FMHUD_ScanTT = tt
+            rawset(_G, "FMHUD_ScanTT", tt)
         end
         for _, s in ipairs({ 11, 12 }) do
             local id = GetInventoryItemID("player", s)
@@ -836,7 +836,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not tt then
             tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
             tt:SetOwner(UIParent, "ANCHOR_NONE")
-            _G.FMHUD_ScanTT = tt
+            rawset(_G, "FMHUD_ScanTT", tt)
         end
         for _, s in ipairs(slots) do
             local id = GetInventoryItemID("player", s)
@@ -973,7 +973,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not tt then
             tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
             tt:SetOwner(UIParent, "ANCHOR_NONE")
-            _G.FMHUD_ScanTT = tt
+            rawset(_G, "FMHUD_ScanTT", tt)
         end
         for _, s in ipairs(slots) do
             local id = GetInventoryItemID("player", s)
@@ -1075,7 +1075,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not tt then
             tt = CreateFrame("GameTooltip", "FMHUD_ScanTT", UIParent, "GameTooltipTemplate")
             tt:SetOwner(UIParent, "ANCHOR_NONE")
-            _G.FMHUD_ScanTT = tt
+            rawset(_G, "FMHUD_ScanTT", tt)
         end
 
         for bag = 0, 4 do
@@ -1169,9 +1169,21 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         if not force and (now - lastRowUpdate < 0.15) then return end
         lastRowUpdate = now
 
-        if not WeakAuras or not WeakAuras.regions then return end
-        local groupObj = WeakAuras.regions["Class Mage (TTW Fire)"]
-        local group = groupObj and (groupObj.region or (groupObj.GetPoint and groupObj))
+        local function getRegion(id)
+            if not WeakAuras then return end
+            if WeakAuras.GetRegion then
+                local obj = WeakAuras.GetRegion(id)
+                if obj then
+                    return obj.region or (obj.GetPoint and obj)
+                end
+            end
+            if WeakAuras.regions then
+                local regObj = WeakAuras.regions[id]
+                return regObj and (regObj.region or (regObj.GetPoint and regObj))
+            end
+        end
+
+        local group = getRegion("Class Mage (TTW Fire)")
         if not group then return end
 
         local hasT1 = _G.FMHUD_CheckSlotEquipped and _G.FMHUD_CheckSlotEquipped(13)
@@ -1215,8 +1227,7 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
         end
         for i, id in ipairs(activeOrder) do
             local targetX = math.floor(((i - (N + 1) / 2) * step) + 0.5)
-            local regObj = WeakAuras.regions[id]
-            local r = regObj and (regObj.region or (regObj.GetPoint and regObj))
+            local r = getRegion(id)
             if r then
                 local point, relTo, relPoint, curX, curY = r:GetPoint(1)
                 if force or not curX or math.abs(curX - targetX) > 0.5 or (curY and math.abs(curY - (-45)) > 0.5) then
@@ -1239,7 +1250,8 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
     end
 
     if not _G.FMHUD_LayoutFrame then
-        local f = CreateFrame("Frame", "FMHUD_LayoutFrame")
+        local f = CreateFrame("Frame")
+        rawset(_G, "FMHUD_LayoutFrame", f)
         local playerGUID = UnitGUID("player")
         f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
         f:RegisterEvent("UNIT_INVENTORY_CHANGED")
@@ -1339,7 +1351,6 @@ SHARED_CORE_BOOTSTRAP_LUA = r"""function()
                 end
             end)
         end)
-        _G.FMHUD_LayoutFrame = f
     end
     -- [OTTIMIZZAZIONE FIX 6]: Cache dell'upvalue playerGUID in FMHUD_LayoutFrame per evitare chiamate a UnitGUID("player") su ogni riga di COMBAT_LOG_EVENT_UNFILTERED.
 

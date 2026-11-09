@@ -1,7 +1,7 @@
 # Class Mage (TTW Fire) — WeakAuras Suite
 
 [![WoW Version](https://img.shields.io/badge/World%20of%20Warcraft-3.3.5a%20(12340)-orange.svg)](https://github.com/Glacyal/fire-mage-335a-am)
-[![WeakAuras](https://img.shields.io/badge/WeakAuras-4.0.0-blue.svg)](https://github.com/Glacyal/fire-mage-335a-am)
+[![WeakAuras](https://img.shields.io/badge/WeakAuras-5.21.8+%20%2F%204.0.0-blue.svg)](https://github.com/Glacyal/fire-mage-335a-am)
 [![Class](https://img.shields.io/badge/Class-Mage%20(Fire%20TTW)-red.svg)](https://github.com/Glacyal/fire-mage-335a-am)
 [![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://glacyal.github.io/fire-mage-335a-am/)
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-gray.svg?logo=paypal&logoColor=white&labelColor=0079c1)](https://www.paypal.me/AMantmar)
@@ -124,8 +124,10 @@ Fire Mage 3.3.5a AM/
 │   ├── test_stats_panel.py          # Verifica formule e moltiplicatori del pannello statistiche
 │   ├── test_string_sync.py          # Verifica corrispondenza tra builder e IMPORT_STRING.txt
 │   └── test_tree_layout.py          # Verifica gerarchia e ordinamento dell'albero
-├── generate.py                      # Script di compilazione della stringa finale
-├── IMPORT_STRING.txt                # Stringa WeakAuras pronta per l'importazione
+├── generate.py                      # Script di compilazione della stringa WeakAuras 5.21.8+
+├── IMPORT_STRING_5.21.8.txt         # Stringa WeakAuras 5.21.8+ nativa (Zero warning, internalVersion: 90)
+├── IMPORT_STRING.txt                # Stringa WeakAuras 4.0.0 legacy (CONGELATA permanentemente, internalVersion: 52)
+├── IMPORT_STRING_v4.0.0.txt         # Backup certificato v4.0.0
 └── scripts/
     └── sync_docs.py                 # Sincronizzazione automatica di IMPORT_STRING.txt in docs/index.html
 ```

@@ -29,8 +29,8 @@ SHARED_HOTSTREAK_CHECK_LUA = r"""function(event, ...)
 
     local f = _G.FMHUD_HSFrame
     if not f then
-        f = CreateFrame("Frame", "FMHUD_HSFrame")
-        _G.FMHUD_HSFrame = f
+        f = CreateFrame("Frame")
+        rawset(_G, "FMHUD_HSFrame", f)
         local playerGUID = UnitGUID("player")
 
         _G.FMHUD_QualifyingSpells = _G.FMHUD_QualifyingSpells or {

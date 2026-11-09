@@ -1909,6 +1909,32 @@
             </ol>
         </div>
 
+        <!-- WeakAuras Version Compatibility & Migration Roadmap -->
+        <div class="import-guide-box" style="border-left: 3px solid #ff9433;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <h4 style="color: #ff9433; margin: 0;">🛡️ WeakAuras Compatibility &amp; Migration Task (WA 4.0.0 &rarr; WA 5.21.8)</h4>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Target: WA 5.21.8 Zero-Warning</span>
+            </div>
+            <p style="font-size: 12px; color: #cbd5e1; margin: 6px 0 8px 0; line-height: 1.5;">
+                <strong>Freeze Policy:</strong> <code>IMPORT_STRING.txt</code> is permanently frozen and preserved for <strong>WeakAuras 4.0.0</strong> (internalVersion 52) and will never be modified again. All future developments will target <strong>WeakAuras 5.21.8</strong> (outputting to <code>IMPORT_STRING_5.21.8.txt</code>).
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 6px;">
+                <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 4px; padding: 10px;">
+                    <div style="color: #ffd100; font-weight: bold; font-size: 12px; margin-bottom: 4px;">⚠️ Warning #1: WeakAuras.regions Deprecation</div>
+                    <code style="font-size: 10.5px; color: #f87171; display: block; margin-bottom: 6px;">Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead.</code>
+                    <p style="font-size: 11px; color: #94a3b8; margin: 0;"><strong>Cause:</strong> Utility Row dynamic centering accessing table directly.<br><strong>Solution:</strong> Migrate to <code>WeakAuras.GetRegion(id)</code> with fallback accessor.</p>
+                </div>
+                <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-radius: 4px; padding: 10px;">
+                    <div style="color: #ffd100; font-weight: bold; font-size: 12px; margin-bottom: 4px;">⚠️ Warning #2: Global Sandbox Overwrite</div>
+                    <code style="font-size: 10.5px; color: #f87171; display: block; margin-bottom: 6px;">The aura has overwritten the global 'FMHUD_HSFrame', this might affect other auras.</code>
+                    <p style="font-size: 11px; color: #94a3b8; margin: 0;"><strong>Cause:</strong> Global frame variable write flagged by WA 5.x linter.<br><strong>Solution:</strong> Encapsulate persistent combat frames within group <code>aura_env</code> / safe registry.</p>
+                </div>
+            </div>
+            <div style="font-size: 11.5px; color: #64748b; margin-top: 6px;">
+                Detailed technical documentation available in <a href="WEAKAURAS_5.21.8_COMPATIBILITY.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">docs/WEAKAURAS_5.21.8_COMPATIBILITY.md</a>.
+            </div>
+        </div>
+
     </div>
 
     <!-- Hidden Input Storage for Copying WeakAuras String -->

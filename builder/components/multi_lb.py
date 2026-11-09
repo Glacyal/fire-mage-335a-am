@@ -53,8 +53,8 @@ SHARED_MULTILB_LUA = r"""function()
 
     local f = _G.FMHUD_LBFrame
     if not f then
-        f = CreateFrame("Frame", "FMHUD_LBFrame")
-        _G.FMHUD_LBFrame = f
+        f = CreateFrame("Frame")
+        rawset(_G, "FMHUD_LBFrame", f)
     end
 
     local playerGUID = UnitGUID("player")
