@@ -185,6 +185,15 @@ Per apportare modifiche alla suite o estendere la logica:
     - `anchorYOffset`, `text_anchorYOffset`, `text_yOffset`
   - Garantita la perfetta centratura di `%1.percentpower%%` in `14 - Mana Bar`, il doppio allineamento `%n` (`INNER_LEFT`) / `%p` (`INNER_RIGHT`) in `16 - Castbar`, e la disposizione su due livelli di `10 - Mana Gem` (`%c` su `INNER_TOPRIGHT` e `%p` su `INNER_BOTTOM`).
 
+### 4.7 Gestione Z-Order e FrameStrata Hot Streak Bar (`15 - Hot Streak Bar`)
+- **Problema di Competizione Z-Order (Flicker / Oscuramento)**:
+  - Quando `Hot Streak Bar - Background` (texture nera semitrasparente 85%) e `Hot Streak Bar - Segment 1` (barra arancione 1° critico) condividono lo stesso FrameStrata (`MEDIUM`) senza livelli espliciti, l'ordine di disegno in WoW dipende dall'ultimo evento o ridisegno.
+  - Se il background viene disegnato sopra il segmento, la sua opacità all'85% oscura la barra arancione rendendola marrone scuro/fango.
+- **Risoluzione Deterministica su Due Livelli**:
+  - **Dichiarativa**: `frameStrata: 2` (`BACKGROUND`) per il background, e `frameStrata: 4` (`MEDIUM`) per Segment 1 e Proc.
+  - **Programmatica nei Trigger**: chiamata forzata a `aura_env.region:SetFrameStrata(...)` e `aura_env.region:SetFrameLevel(1)` per il background e `(10)` per i segmenti attivi.
+  - In questo modo la barra arancione è matematicamente garantita di trovarsi sempre sopra il background nero.
+
 ---
 
 ## 5. Matrice di Compatibilità Addon & API

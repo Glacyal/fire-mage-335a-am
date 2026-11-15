@@ -69,5 +69,16 @@ class TestHotStreakDecoupled(unittest.TestCase):
         self.assertIn("COMBAT_LOG_EVENT_UNFILTERED", SHARED_HOTSTREAK_CHECK_LUA)
 
 
+    def test_hotstreak_framestrata_and_levels(self):
+        """Verifica che il background sia in strata BACKGROUND (2) e i segmenti in MEDIUM (4) per evitare sovrapposizioni z-order."""
+        auras = {a["id"]: a for a in build_hotstreak_auras()}
+        bg = auras["Hot Streak Bar - Background"]
+        seg1 = auras["Hot Streak Bar - Segment 1"]
+        proc = auras["Hot Streak Bar - Proc"]
+        self.assertEqual(bg.get("frameStrata"), 2, "Background deve essere frameStrata 2 (BACKGROUND)")
+        self.assertEqual(seg1.get("frameStrata"), 4, "Segment 1 deve essere frameStrata 4 (MEDIUM)")
+        self.assertEqual(proc.get("frameStrata"), 4, "Proc deve essere frameStrata 4 (MEDIUM)")
+
+
 if __name__ == "__main__":
     unittest.main()

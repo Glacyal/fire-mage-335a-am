@@ -144,6 +144,10 @@ end"""
 def make_hotstreak_bg_trigger() -> str:
     """Trigger di stato per il Background Frame di Hot Streak."""
     return """function(event, ...)
+    if aura_env and aura_env.region then
+        if aura_env.region.SetFrameStrata then aura_env.region:SetFrameStrata("BACKGROUND") end
+        if aura_env.region.SetFrameLevel then aura_env.region:SetFrameLevel(1) end
+    end
     _G.FMHUD_InitHotStreak = _G.FMHUD_InitHotStreak or (""" + SHARED_HOTSTREAK_CHECK_LUA + """)
     if _G.FMHUD_InitHotStreak then _G.FMHUD_InitHotStreak(event, ...) end
     return not UnitIsDeadOrGhost("player")
@@ -160,6 +164,10 @@ end"""
 def make_hotstreak_seg1_trigger() -> str:
     """Trigger per la mezza barra sinistra (1° Critico): attiva se hs.streak == 1."""
     return """function(event, ...)
+    if aura_env and aura_env.region then
+        if aura_env.region.SetFrameStrata then aura_env.region:SetFrameStrata("MEDIUM") end
+        if aura_env.region.SetFrameLevel then aura_env.region:SetFrameLevel(10) end
+    end
     if _G.FMHUD_InitHotStreak then
         _G.FMHUD_InitHotStreak(event, ...)
     end
@@ -212,6 +220,7 @@ def build_hotstreak_auras() -> list[dict]:
             "parent": "15 - Hot Streak Bar",
             "regionType": "texture",
             "internalVersion": 52,
+            "frameStrata": 2,
             "xOffset": 0,
             "yOffset": 0,
             "width": 278,
@@ -243,6 +252,7 @@ def build_hotstreak_auras() -> list[dict]:
             "parent": "15 - Hot Streak Bar",
             "regionType": "texture",
             "internalVersion": 52,
+            "frameStrata": 4,
             "width": 137,
             "height": 5,
             "xOffset": -70.5,
@@ -274,6 +284,7 @@ def build_hotstreak_auras() -> list[dict]:
             "parent": "15 - Hot Streak Bar",
             "regionType": "aurabar",
             "internalVersion": 52,
+            "frameStrata": 4,
             "width": 137,
             "height": 5,
             "xOffset": 70.5,
